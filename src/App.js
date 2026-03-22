@@ -157,7 +157,7 @@ function App() {
   const handleRequestFullscreen = useCallback((iframeContent, stats) => { setFullscreenReplay({ iframeContent, stats }); }, []);
   const handleCloseFullscreen = useCallback(() => { setFullscreenReplay(null); }, []);
 
-  const baseURL = "http://localhost:5000";
+  const baseURL = "https://backend-enqf.onrender.com";
 
   useEffect(() => {
     const buttons = document.querySelectorAll(".btn");
