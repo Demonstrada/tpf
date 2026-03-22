@@ -1,70 +1,76 @@
-# Getting Started with Create React App
+# 🏆 Arena e-Sports: Plataforma de Torneos y Eventos (Pokémon)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
+![MySQL](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)
 
-## Available Scripts
+Una plataforma *Full-Stack* diseñada para la gestión, administración y automatización de competiciones de e-sports, con integración nativa para batallas de **Pokémon Showdown**.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## ✨ Características Principales
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### ⚔️ Motor de Torneos Avanzado
+- **Brackets Automáticos:** Generación automática de árboles de **doble eliminación** (Ganadores, Perdedores y Gran Final).
+- **Formatos Dinámicos:** Soporte para modalidades **1v1 y 2v2**, incluyendo un sistema de emparejamiento aleatorio (Random 2v2).
+- **Series BO3 / BO5:** Despliegue de rondas individuales dentro de una misma partida.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 🛡️ Visor y Validación Anti-Trampas
+- **Showdown Replay Log:** Los jugadores deben subir el log RAW de su combate.
+- **Análisis de Equipos:** El sistema cruza el *Paste* del equipo registrado con los Pokémon utilizados realmente en el log para detectar discrepancias en movimientos, habilidades y objetos.
+- **Visor Integrado:** Reproductor de combates incrustado directamente en la plataforma.
 
-### `npm test`
+### 🎁 Sistema de Misiones y Recompensas
+- **Misiones Diarias/Globales:** Los usuarios pueden reclamar misiones que los administradores validarán posteriormente.
+- **Bonus Dinámicos:** Los Eventos activos pueden otorgar multiplicadores de puntos a toda la plataforma.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 👑 Panel de Administración Completo
+- Gestión absoluta de usuarios, eventos, torneos y enfrentamientos.
+- Resolución de disputas y capacidad de **forzar resultados** en los brackets en caso de incomparecencia (Bye).
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🛠️ Tecnologías Utilizadas
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Frontend:** React (Hooks, Context, estilos dinámicos modulares por temas).
+- **Backend:** Node.js con Express.
+- **Base de Datos:** MySQL (con `mysql2` para consultas basadas en promesas).
+- **Otros:** Procesamiento de archivos `.txt/.log` y *parsing* de datos tácticos.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🚀 Despliegue en Local (Localhost)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Para correr este proyecto en tu propia máquina, sigue estos pasos:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. **Clonar el repositorio:**
+   ```bash
+   git clone [https://github.com/Demonstrada/tpf.git](https://github.com/Demonstrada/tpf.git)
+   ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+2. **Base de Datos:**
+   - Importa el archivo de tu base de datos en tu gestor SQL local (ej. phpMyAdmin / XAMPP).
+   - Asegúrate de tener las credenciales correctas en tu archivo del servidor (`server.js`).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+3. **Instalar dependencias y arrancar:**
+   ```bash
+   # Instalar dependencias del Backend y Frontend
+   npm install
+   
+   # Arrancar el servidor backend (normalmente en el puerto 5000)
+   node server.js
+   
+   # Arrancar el frontend (en otra terminal)
+   npm start
+   ```
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🌐 Preparado para la Nube
+Este proyecto está estructurado para ser desplegado de forma gratuita dividiendo sus servicios:
+- **Frontend:** Listo para `Vercel` o `Netlify`.
+- **Backend:** Listo para `Render.com` o `Railway`.
+- **Base de datos:** Compatible con servicios en la nube como `Aiven`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+*Creado con pasión para la comunidad competitiva.* 🎮
