@@ -46,18 +46,28 @@ function AdminView({ baseURL }) {
   const [imagenes, setImagenes] = useState([]);
   const [nuevosArchivos, setNuevosArchivos] = useState([]);
 
+  // --- ESCUDOS AÑADIDOS AQUI: Validamos que la respuesta sea Array.isArray() ---
   useEffect(() => {
-    fetch(`${baseURL}/juegos`).then(r => r.json()).then(setJuegos).catch(console.error);
+    fetch(`${baseURL}/juegos`)
+      .then(r => r.json())
+      .then(data => setJuegos(Array.isArray(data) ? data : []))
+      .catch(console.error);
   }, [baseURL]);
 
   const cargarMisiones = useCallback(() => {
-    fetch(`${baseURL}/misiones`).then(r => r.json()).then(setMisiones).catch(console.error);
+    fetch(`${baseURL}/misiones`)
+      .then(r => r.json())
+      .then(data => setMisiones(Array.isArray(data) ? data : []))
+      .catch(console.error);
   }, [baseURL]);
 
   useEffect(() => { cargarMisiones(); }, [cargarMisiones]);
 
   useEffect(() => {
-    fetch(`${baseURL}/grupos`).then(r => r.json()).then(setGrupos).catch(console.error);
+    fetch(`${baseURL}/grupos`)
+      .then(r => r.json())
+      .then(data => setGrupos(Array.isArray(data) ? data : []))
+      .catch(console.error);
   }, [baseURL]);
 
   useEffect(() => {
@@ -198,7 +208,10 @@ function AdminView({ baseURL }) {
     setFormData(prev => ({ ...prev, JuegoId: data.id }));
   };
 
-  const misionesFiltradas = misiones.filter(m => {
+  // --- ESCUDO: Aseguramos que 'misiones' siga siendo tratada como array ---
+  const misionesSeguras = Array.isArray(misiones) ? misiones : [];
+  
+  const misionesFiltradas = misionesSeguras.filter(m => {
     const ok1 = filtroJuego === "" || m.JuegoId === Number(filtroJuego);
     const ok2 = filtroGrupo === "" || m.Grupo === Number(filtroGrupo);
     const ok3 = filtroEstado === "" || m.Activa === Number(filtroEstado);
@@ -221,7 +234,7 @@ function AdminView({ baseURL }) {
             Administrar Misiones
           </h1>
           <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.85rem" }}>
-            {misiones.length} misiones en total · {misiones.filter(m => m.Activa).length} activas
+            {misionesSeguras.length} misiones en total · {misionesSeguras.filter(m => m.Activa).length} activas
           </p>
         </div>
         <button onClick={abrirFormularioNuevo} style={{
@@ -245,11 +258,11 @@ function AdminView({ baseURL }) {
       }}>
         <FilterSelect label="Juego" value={filtroJuego} onChange={e => setFiltroJuego(e.target.value)}>
           <option value="">Todos los juegos</option>
-          {juegos.map(j => <option key={j.ID} value={j.ID}>{j.Nombre}</option>)}
+          {Array.isArray(juegos) && juegos.map(j => <option key={j.ID} value={j.ID}>{j.Nombre}</option>)}
         </FilterSelect>
         <FilterSelect label="Grupo" value={filtroGrupo} onChange={e => setFiltroGrupo(e.target.value)}>
           <option value="">Todos los grupos</option>
-          {grupos.map(g => <option key={g.ID} value={g.ID}>{g.Nombre}</option>)}
+          {Array.isArray(grupos) && grupos.map(g => <option key={g.ID} value={g.ID}>{g.Nombre}</option>)}
         </FilterSelect>
         <FilterSelect label="Estado" value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}>
           <option value="">Activas e inactivas</option>
@@ -485,7 +498,7 @@ function AdminView({ baseURL }) {
                   }}
                 >
                   <option value="">{sel.placeholder}</option>
-                  {sel.items.map(item => <option key={item.ID} value={item.ID}>{item.Nombre}</option>)}
+                  {Array.isArray(sel.items) && sel.items.map(item => <option key={item.ID} value={item.ID}>{item.Nombre}</option>)}
                 </select>
                 <button onClick={sel.onCreate} title={`Crear nuevo ${sel.label.toLowerCase()}`} style={{
                   background: "var(--bg-soft)", color: "var(--primary)", border: "1px solid var(--border-color)",
