@@ -241,7 +241,7 @@ export default function EditarPerfil({ usuarioData, setUsuarioData, onClose, bas
     })
       .then((res) => res.json())
       .then((data) => {
-        setImagenesGaleria([...imagenesGaleria, { ID: data.ID, Imagen: data.Imagen }]);
+        setImagenesGaleria([...imagenesGaleria, { ID: data.ID, Imagen: data.Imagen || nuevoArchivo.base64 }]);
         setNuevoArchivo(null);
       });
   };
@@ -250,14 +250,14 @@ export default function EditarPerfil({ usuarioData, setUsuarioData, onClose, bas
     <div style={modalStyles.backdrop} onClick={onClose}>
       {/* Detenemos la propagación del click para no cerrar el modal al pinchar dentro */}
       <div style={modalStyles.modal} onClick={(e) => e.stopPropagation()}>
-        
+
         <div style={modalStyles.header}>
           <h3 style={modalStyles.title}>Configuración de Perfil</h3>
           <button style={modalStyles.closeBtn} onClick={onClose}>×</button>
         </div>
 
         <div style={modalStyles.body}>
-          
+
           {/* COLUMNA 1: DATOS */}
           <div>
             <h4 style={modalStyles.sectionTitle}>Datos de Acceso</h4>
@@ -269,7 +269,7 @@ export default function EditarPerfil({ usuarioData, setUsuarioData, onClose, bas
               <label style={modalStyles.label}>Usuario</label>
               <input type="text" style={modalStyles.input} value={nuevoUsuario} onChange={(e) => setNuevoUsuario(e.target.value)} />
             </div>
-            
+
             <h4 style={modalStyles.sectionTitle}>Cambiar Contraseña</h4>
             <div style={modalStyles.inputGroup}>
               <label style={modalStyles.label}>Nueva Contraseña</label>
@@ -309,9 +309,9 @@ export default function EditarPerfil({ usuarioData, setUsuarioData, onClose, bas
               <label htmlFor="file-upload-compact" style={modalStyles.fileLabel}>
                 {nuevoArchivo ? `📂 ${nuevoArchivo.file.name}` : "📁 Subir nueva imagen..."}
               </label>
-              
+
               {nuevoArchivo && (
-                <button onClick={subirNuevaImagen} style={{...modalStyles.btnSecondary, width: "100%", marginTop: "10px", borderColor: "#238636", color: "#f0f6fc"}}>
+                <button onClick={subirNuevaImagen} style={{ ...modalStyles.btnSecondary, width: "100%", marginTop: "10px", borderColor: "#238636", color: "#f0f6fc" }}>
                   ⬆️ Confirmar Subida
                 </button>
               )}
