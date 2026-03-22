@@ -70,7 +70,7 @@ Para correr este proyecto en tu propia máquina, sigue estos pasos:
 ## 🌐 Preparado para la Nube
 Este proyecto está estructurado para ser desplegado de forma gratuita dividiendo sus servicios:
 - **Frontend:** Listo para `Vercel` o `Netlify`.
-- **Backend:** Listo para `Render.com` o `Railway`.
-- **Base de datos:** Compatible con servicios en la nube como `Aiven`.
+- **Backend:** Listo para `Render.com` o `Railway` (Actualmente fuera de este repositorio).
+- **Base de datos:** Compatible con servicios en la nube como `Aiven` (No forma parte de este proyecto).
 
 *Creado con pasión para la comunidad competitiva.* 🎮
