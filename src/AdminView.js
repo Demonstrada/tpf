@@ -570,7 +570,7 @@ function AdminView({ baseURL }) {
                       fontSize: "0.75rem", fontWeight: 900, cursor: "pointer",
                       display: "flex", alignItems: "center", justifyContent: "center"
                     }}>×</button>
-                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "4px 0", fontSize: "0.6rem", fontWeight: 700, background: "rgba(var(--primary-dark),0.8)", color: "#fff", textAlign: "center", background: "var(--primary)", letterSpacing: "0.5px" }}>NUEVA</div>
+                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "4px 0", fontSize: "0.6rem", fontWeight: 700, color: "#fff", textAlign: "center", background: "var(--primary)", letterSpacing: "0.5px" }}>NUEVA</div>
                   </div>
                 ))}
               </div>
