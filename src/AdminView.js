@@ -172,7 +172,6 @@ function AdminView({ baseURL }) {
     setFormData(prev => ({ ...prev, ID: misionId }));
     if (nuevosArchivos.length > 0) await subirImagenes();
     cargarMisiones();
-    setMostrarFormulario(false);
   };
 
   const eliminarMision = async (id, nombre) => {
