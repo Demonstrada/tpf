@@ -2827,3 +2827,109 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
 }
+/* ==============================================================
+   RESPONSIVE Y ADAPTACIÓN AL ZOOM (PANTALLAS < 1100px)
+   ============================================================== */
+
+@media (max-width: 1100px) {
+  /* 1. El Sidebar deja de estar a la izquierda y pasa a la parte superior/inferior o se hace más pequeño */
+  .dashboard {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1rem;
+    overflow-x: auto; /* Permite scroll horizontal en el menú si hay muchas opciones */
+  }
+
+  .sidebar .user-info {
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sidebar .user-avatar {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 0;
+  }
+
+  .sidebar nav ul {
+    display: flex;
+    gap: 10px;
+  }
+
+  .sidebar .menu-item {
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  /* 2. Modales (Perfil, Misiones, etc.) ocupan todo el ancho */
+  .modal-card,
+  .premium-modal,
+  .galeria-modal {
+    width: 95vw !important;
+    max-width: 100% !important;
+    padding: 1.5rem !important;
+    max-height: 90vh;
+  }
+
+  .perfil-layout {
+    gap: 1rem;
+  }
+
+  /* 3. Replay View y combates: Pasar de 2 columnas a 1 columna */
+  .layout-split {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .layout-split .replay-screen-container,
+  .layout-split .replay-stats-panel {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .combat-methods-container {
+    flex-direction: column;
+  }
+
+  /* 4. Grids generales: asegurar que no se desborden */
+  .eventos-grid,
+  .misiones-grid,
+  .galeria-grid,
+  .inputs-grid {
+    grid-template-columns: 1fr !important; /* Todo a 1 sola columna si hay zoom extremo */
+  }
+
+  /* 5. Asegurar que las tarjetas de combates encajen */
+  .combat-team-box {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+}
+
+/* ==============================================================
+   ADAPTACIÓN EXTREMA (Para zoom de +150% o móviles < 768px)
+   ============================================================== */
+@media (max-width: 768px) {
+  .content {
+    padding: 1rem; /* Reducir padding para ganar espacio */
+  }
+  
+  .combat-iframe-wrapper iframe {
+    height: 350px; /* Hacer el iframe más pequeño en pantallas ajustadas */
+  }
+  
+  .btn-guardar-perfil {
+    width: 100%; /* Botones de acción ocupan todo el ancho */
+  }
+}
