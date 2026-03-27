@@ -255,60 +255,60 @@ export default function MisionesView({ baseURL, usuarioData }) {
 
                     </div>
 
-                    {/* COLUMNA DERECHA: SIDEBAR DE EVENTOS ACTIVOS */}
-                    <div style={{ flex: "1 1 320px", minWidth: "280px", display: "flex", flexDirection: "column", gap: "1rem" }}>
-                        <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--text-main)", margin: "0 0 0.5rem 0", borderBottom: "2px solid var(--border-color)", paddingBottom: "8px" }}>
+                    {/* COLUMNA DERECHA: SIDEBAR DE EVENTOS ACTIVOS MÁS COMPACTA */}
+                    <div style={{ flex: "1 1 260px", minWidth: "240px", display: "flex", flexDirection: "column", gap: "1rem" }}>
+                        <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--text-main)", margin: "0 0 0.5rem 0", borderBottom: "2px solid var(--border-color)", paddingBottom: "8px" }}>
                             🎟 Eventos Activos
                         </h2>
 
                         {eventosActivos.length === 0 ? (
-                            <div style={{ textAlign: "center", padding: "2rem 1rem", color: "var(--text-muted)", background: "var(--bg-card)", border: "1px dashed var(--border-color)", borderRadius: "12px" }}>
-                                <p style={{ margin: 0, fontSize: "0.85rem", fontWeight: 600 }}>No hay eventos activos en este momento</p>
+                            <div style={{ textAlign: "center", padding: "1.5rem 1rem", color: "var(--text-muted)", background: "var(--bg-card)", border: "1px dashed var(--border-color)", borderRadius: "10px" }}>
+                                <p style={{ margin: 0, fontSize: "0.8rem", fontWeight: 600 }}>No hay eventos activos en este momento</p>
                             </div>
                         ) : (
-                            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                                 {eventosActivos.map(ev => (
-                                    <div key={ev.ID} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "14px", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                                    <div key={ev.ID} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "10px", overflow: "hidden", display: "flex", flexDirection: "column" }}>
 
-                                        {/* IMAGEN / PLACEHOLDER */}
-                                        <div style={{ aspectRatio: "16/7", background: "var(--bg-soft)", position: "relative", overflow: "hidden" }}>
+                                        {/* IMAGEN / PLACEHOLDER (Proporción más horizontal) */}
+                                        <div style={{ aspectRatio: "21/9", background: "var(--bg-soft)", position: "relative", overflow: "hidden" }}>
                                             {ev.Imagen_Base64
                                                 ? <img src={`data:image/png;base64,${ev.Imagen_Base64}`} alt={ev.Nombre} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                                                : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--border-color)", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "1px" }}>SIN IMAGEN</div>
+                                                : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--border-color)", fontSize: "0.65rem", fontWeight: 600, letterSpacing: "1px" }}>SIN IMAGEN</div>
                                             }
-                                            {/* BADGES */}
-                                            <div style={{ position: "absolute", top: "8px", left: "8px", display: "flex", gap: "5px", flexWrap: "wrap" }}>
-                                                <span style={{ fontSize: "0.6rem", fontWeight: 800, padding: "2px 8px", borderRadius: "20px", background: "var(--success)", color: "#fff", letterSpacing: "0.5px" }}>
+                                            {/* BADGES MÁS PEQUEÑOS */}
+                                            <div style={{ position: "absolute", top: "6px", left: "6px", display: "flex", gap: "4px", flexWrap: "wrap" }}>
+                                                <span style={{ fontSize: "0.55rem", fontWeight: 800, padding: "2px 6px", borderRadius: "10px", background: "var(--success)", color: "#fff", letterSpacing: "0.5px" }}>
                                                     ACTIVO
                                                 </span>
                                                 {ev.Es_Rivales === 1 && (
-                                                    <span style={{ fontSize: "0.6rem", fontWeight: 800, padding: "2px 8px", borderRadius: "20px", background: "var(--primary)", color: "#fff", letterSpacing: "0.5px" }}>
+                                                    <span style={{ fontSize: "0.55rem", fontWeight: 800, padding: "2px 6px", borderRadius: "10px", background: "var(--primary)", color: "#fff", letterSpacing: "0.5px" }}>
                                                         RIVALES
                                                     </span>
                                                 )}
                                                 {ev.Tiene_Combates === 1 && (
-                                                    <span style={{ fontSize: "0.6rem", fontWeight: 800, padding: "2px 8px", borderRadius: "20px", background: "rgba(0,0,0,0.55)", color: "#fff", letterSpacing: "0.5px" }}>
+                                                    <span style={{ fontSize: "0.55rem", fontWeight: 800, padding: "2px 6px", borderRadius: "10px", background: "rgba(0,0,0,0.6)", color: "#fff", letterSpacing: "0.5px" }}>
                                                         BO{ev.Rondas_Mejor_De}
                                                     </span>
                                                 )}
                                             </div>
                                         </div>
 
-                                        {/* INFO */}
-                                        <div style={{ padding: "14px 16px", flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
-                                            <h3 style={{ margin: 0, fontWeight: 800, fontSize: "0.95rem", color: "var(--text-main)" }}>{ev.Nombre}</h3>
+                                        {/* INFO MÁS COMPACTA */}
+                                        <div style={{ padding: "10px 12px", flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
+                                            <h3 style={{ margin: 0, fontWeight: 800, fontSize: "0.85rem", color: "var(--text-main)", lineHeight: 1.2 }}>{ev.Nombre}</h3>
                                             {ev.Juego_Nombre && (
-                                                <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>{ev.Juego_Nombre}</span>
+                                                <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>{ev.Juego_Nombre}</span>
                                             )}
 
                                             {/* Mostrar si el evento da bonus de puntos o si tiene puntos por combate */}
                                             {(ev.Bonus_Puntos_Global > 0 || ev.Puntos_Victoria_Enfrentamiento > 0) && (
-                                                <div style={{ marginTop: "6px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                                                <div style={{ marginTop: "4px", display: "flex", flexDirection: "column", gap: "2px" }}>
                                                     {ev.Bonus_Puntos_Global > 0 && (
-                                                        <span style={{ fontSize: "0.72rem", color: "var(--primary)", fontWeight: 700 }}>⭐ +{ev.Bonus_Puntos_Global} Puntos Globales</span>
+                                                        <span style={{ fontSize: "0.65rem", color: "var(--primary)", fontWeight: 700 }}>⭐ +{ev.Bonus_Puntos_Global} Puntos Globales</span>
                                                     )}
                                                     {ev.Puntos_Victoria_Enfrentamiento > 0 && (
-                                                        <span style={{ fontSize: "0.72rem", color: "var(--success)", fontWeight: 700 }}>⚔️ +{ev.Puntos_Victoria_Enfrentamiento} Puntos por Combate</span>
+                                                        <span style={{ fontSize: "0.65rem", color: "var(--success)", fontWeight: 700 }}>⚔️ +{ev.Puntos_Victoria_Enfrentamiento} Puntos por Combate</span>
                                                     )}
                                                 </div>
                                             )}
