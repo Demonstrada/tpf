@@ -9,7 +9,7 @@ import ReplayView from "./ReplayView";
 import AdminEventosView from "./AdminEventosView";
 import AdminTorneosView from "./AdminTorneosView";
 import MisCombatesView from "./MisCombatesView";
-import MisionesView from "./MisionesView"; // <-- IMPORTANTE: Importamos el nuevo componente
+import MisionesView from "./MisionesView";
 
 function FullscreenReplayOverlay({ iframeContent, stats, onClose }) {
   const [showStats, setShowStats] = useState(false);
@@ -80,7 +80,15 @@ function App() {
   const [usuario, setUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [mensaje, setMensaje] = useState("");
-  const [usuarioData, setUsuarioData] = useState(null);
+  
+  // <-- MODIFICADO: Leer usuario desde localStorage al iniciar -->
+  const [usuarioData, setUsuarioData] = useState(() => {
+    const guardado = localStorage.getItem('usuarioData');
+    if (guardado) {
+      return JSON.parse(guardado);
+    }
+    return null;
+  });
 
   const [galeriaVisible, setGaleriaVisible] = useState(false);
   const [imagenesGaleria, setImagenesGaleria] = useState([]);
@@ -90,7 +98,12 @@ function App() {
   const [seleccionadaId, setSeleccionadaId] = useState(null);
 
   const [perfilVisible, setPerfilVisible] = useState(false);
-  const [vista, setVista] = useState("dashboard"); // <-- "misiones" cambiado a "dashboard"
+  
+  // <-- MODIFICADO: Leer vista actual desde localStorage al iniciar -->
+  const [vista, setVista] = useState(() => {
+    const vistaGuardada = localStorage.getItem('vistaActual');
+    return vistaGuardada || "dashboard";
+  });
 
   const [fullscreenReplay, setFullscreenReplay] = useState(null);
   const handleRequestFullscreen = useCallback((iframeContent, stats) => { setFullscreenReplay({ iframeContent, stats }); }, []);
@@ -112,6 +125,12 @@ function App() {
     });
   }, []);
 
+  // <-- NUEVO: Función para cambiar de vista y guardar en localStorage -->
+  const cambiarVista = (nuevaVista) => {
+    setVista(nuevaVista);
+    localStorage.setItem('vistaActual', nuevaVista);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -119,11 +138,19 @@ function App() {
       const data = await res.json();
       if (data.success) {
         setUsuarioData(data);
+        localStorage.setItem('usuarioData', JSON.stringify(data)); // <-- Guardar sesión
         setMensaje("");
-        setVista("dashboard");
+        cambiarVista("dashboard");
       }
       else setMensaje("Usuario o contraseña incorrectos");
     } catch { setMensaje("Error en el servidor"); }
+  };
+
+  // <-- NUEVO: Función para desloguearse -->
+  const handleLogout = () => {
+    setUsuarioData(null);
+    localStorage.removeItem('usuarioData');
+    localStorage.removeItem('vistaActual');
   };
 
   const abrirGaleria = (tabla, registroId) => {
@@ -131,7 +158,7 @@ function App() {
     fetch(`${baseURL}/imagenes/${tabla}/${registroId}`)
       .then(res => res.json())
       .then(data => { setImagenesGaleria(data); setGaleriaTabla(tabla); setGaleriaRegistroId(registroId); setGaleriaVisible(true); })
-      .catch(err => console.error("Error al abrir galería: - App.js:134", err));
+      .catch(err => console.error("Error al abrir galería: - App.js:161", err));
   };
 
   const asignarImagenPrincipal = (imagenId) => {
@@ -139,7 +166,7 @@ function App() {
     fetch(`${baseURL}/imagenes/principal`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usuarioId: usuarioData.id, tabla: galeriaTabla, registroId: galeriaRegistroId, imagenId }) })
       .then(async res => { if (!res.ok) { const e = await res.json(); throw new Error(e.error || "Error"); } return res.json(); })
       .then(() => { alert("Imagen asignada correctamente"); })
-      .catch(err => { console.error("Error asignando imagen principal: - App.js:142", err); alert("No autorizado."); });
+      .catch(err => { console.error("Error asignando imagen principal: - App.js:169", err); alert("No autorizado."); });
   };
 
   const handleArchivoSeleccionado = (e) => {
@@ -154,13 +181,21 @@ function App() {
     fetch(`${baseURL}/imagenes/nueva`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tabla: galeriaTabla, registroId: galeriaRegistroId, imagenBase64: nuevoArchivo }) })
       .then(res => res.json())
       .then(data => { setImagenesGaleria([...imagenesGaleria, { ID: data.ID, Imagen: data.Imagen }]); setNuevoArchivo(null); })
-      .catch(err => console.error("Error subiendo imagen: - App.js:157", err));
+      .catch(err => console.error("Error subiendo imagen: - App.js:184", err));
   };
 
   const cambiarTema = (nuevoTemaId) => {
-    setUsuarioData({ ...usuarioData, tema: nuevoTemaId });
+    const newData = { ...usuarioData, tema: nuevoTemaId };
+    setUsuarioData(newData);
+    localStorage.setItem('usuarioData', JSON.stringify(newData)); // <-- Actualizar Storage
     fetch(`${baseURL}/usuarios/${usuarioData.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nombre: usuarioData.nombre, usuario: usuarioData.usuario, tema: nuevoTemaId }) })
-      .catch(err => console.error("Error guardando el tema: - App.js:163", err));
+      .catch(err => console.error("Error guardando el tema: - App.js:192", err));
+  };
+
+  // <-- NUEVO: Función wrapper para pasar a EditarPerfil y que actualice el localStorage -->
+  const updateUsuarioDataAndStorage = (newData) => {
+    setUsuarioData(newData);
+    localStorage.setItem('usuarioData', JSON.stringify(newData));
   };
 
   if (!usuarioData) {
@@ -227,13 +262,12 @@ function App() {
   return (
     <>
       <div className={`dashboard ${vista === "replay" || vista === "mis-combates" ? "theme-combat" : ""}`} data-theme={usuarioData?.tema || 1}>
-        <Sidebar usuarioData={usuarioData} onChangeVista={setVista} onAbrirGaleria={abrirGaleria} onLogout={() => setUsuarioData(null)} onChangeTheme={cambiarTema} />
+        <Sidebar usuarioData={usuarioData} onChangeVista={cambiarVista} onAbrirGaleria={abrirGaleria} onLogout={handleLogout} onChangeTheme={cambiarTema} />
 
         <main className="content">
-          {/* El componente importado se usa aquí ↓ */}
           {vista === "dashboard" && <MisionesView baseURL={baseURL} usuarioData={usuarioData} />}
 
-          {perfilVisible && <EditarPerfil usuarioData={usuarioData} setUsuarioData={setUsuarioData} baseURL={baseURL} onClose={() => setPerfilVisible(false)} />}
+          {perfilVisible && <EditarPerfil usuarioData={usuarioData} setUsuarioData={updateUsuarioDataAndStorage} baseURL={baseURL} onClose={() => setPerfilVisible(false)} />}
 
           {galeriaVisible && galeriaTabla !== "usuarios" && (
             <>
