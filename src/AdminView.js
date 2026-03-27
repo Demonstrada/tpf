@@ -587,4 +587,110 @@ function AdminView({ baseURL }) {
           <button onClick={guardarMision} style={{
             marginTop: "8px", padding: "12px",
             background: "linear-gradient(135deg, var(--primary), var(--primary-dark))",
-            color: "#
+            color: "#fff", border: "none", borderRadius: "10px",
+            fontWeight: 800, fontSize: "0.9rem", cursor: "pointer",
+            letterSpacing: "0.5px", transition: "opacity 0.15s"
+          }}
+            onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
+            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+          >
+            Guardar y añadir imágenes
+          </button>
+        )}
+
+        {formData.ID && (
+          <div style={{
+            background: "var(--bg-soft)", border: "1px solid var(--border-color)",
+            borderRadius: "12px", padding: "20px"
+          }}>
+            <h3 style={{ margin: "0 0 14px", fontSize: "0.88rem", fontWeight: 800, color: "var(--text-main)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              Imágenes
+            </h3>
+
+            <label style={{
+              display: "inline-flex", alignItems: "center", gap: "8px",
+              background: "var(--bg-card)", border: "1px dashed var(--border-color)",
+              borderRadius: "8px", padding: "10px 16px",
+              fontSize: "0.82rem", fontWeight: 600, color: "var(--text-muted)",
+              cursor: "pointer", transition: "border-color 0.2s"
+            }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = "var(--primary)"}
+              onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border-color)"}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
+              </svg>
+              Seleccionar imágenes
+              <input type="file" multiple onChange={handleArchivosSeleccionados} style={{ display: "none" }} />
+            </label>
+
+            {(imagenes.length > 0 || nuevosArchivos.length > 0) && (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: "10px", marginTop: "14px" }}>
+                {imagenes.map(img => (
+                  <div key={img.ID} style={{
+                    borderRadius: "8px", overflow: "hidden", position: "relative",
+                    border: `2px solid ${img.principal ? "var(--primary)" : "var(--border-color)"}`,
+                    background: "var(--bg-card)"
+                  }}>
+                    <img src={`data:image/png;base64,${img.Imagen}`} alt="misión" style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} />
+                    <button onClick={() => cambiarImagenPrincipal(img.ID)} disabled={img.principal} style={{
+                      position: "absolute", bottom: 0, left: 0, right: 0,
+                      padding: "4px 0", fontSize: "0.6rem", fontWeight: 700,
+                      background: img.principal ? "var(--primary)" : "rgba(0,0,0,0.55)",
+                      color: "#fff", border: "none", cursor: img.principal ? "default" : "pointer",
+                      letterSpacing: "0.5px"
+                    }}>
+                      {img.principal ? "PRINCIPAL" : "Establecer"}
+                    </button>
+                  </div>
+                ))}
+
+                {nuevosArchivos.map((fileObj, index) => (
+                  <div key={index} style={{ borderRadius: "8px", overflow: "hidden", position: "relative", border: "2px dashed var(--primary)", background: "var(--bg-card)" }}>
+                    <img src={fileObj.preview} alt="preview" style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block", opacity: 0.7 }} />
+                    <button onClick={() => eliminarArchivoSeleccionado(index)} style={{
+                      position: "absolute", top: "4px", right: "4px",
+                      background: "var(--danger)", color: "#fff", border: "none",
+                      borderRadius: "50%", width: "22px", height: "22px",
+                      fontSize: "0.75rem", fontWeight: 900, cursor: "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center"
+                    }}>×</button>
+                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "4px 0", fontSize: "0.6rem", fontWeight: 700, color: "#fff", textAlign: "center", background: "var(--primary)", letterSpacing: "0.5px" }}>NUEVA</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {nuevosArchivos.length > 0 && (
+              <button onClick={subirImagenes} style={{
+                marginTop: "12px", width: "100%", padding: "10px",
+                background: "var(--success)", color: "#fff", border: "none",
+                borderRadius: "8px", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer"
+              }}>
+                Confirmar subida ({nuevosArchivos.length} imagen{nuevosArchivos.length > 1 ? "es" : ""})
+              </button>
+            )}
+          </div>
+        )}
+
+        {formData.ID && (
+          <button onClick={guardarMision} style={{
+            padding: "13px", marginTop: "4px",
+            background: "linear-gradient(135deg, var(--primary), var(--primary-dark))",
+            color: "#fff", border: "none", borderRadius: "10px",
+            fontWeight: 800, fontSize: "0.95rem", cursor: "pointer",
+            letterSpacing: "0.5px", transition: "opacity 0.15s"
+          }}
+            onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
+            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+          >
+            Actualizar misión
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default AdminView;
