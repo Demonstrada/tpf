@@ -410,7 +410,7 @@ function AdminView({ baseURL }) {
           <h1 style={{ margin: "0 0 2px", fontSize: "1.4rem", fontWeight: 800, color: "var(--text-main)" }}>
             {formData.ID ? "Editar misión" : "Nueva misión"}
           </h1>
-          {formData.ID && <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.8rem" }}>ID #{formData.ID}</p>}
+          {formData.ID && <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.8rem" }}>#{formData.ID}</p>}
         </div>
       </div>
 
