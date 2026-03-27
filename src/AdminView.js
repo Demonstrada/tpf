@@ -31,6 +31,7 @@ function AdminView({ baseURL }) {
   const [juegos, setJuegos] = useState([]);
   const [misiones, setMisiones] = useState([]);
   const [grupos, setGrupos] = useState([]);
+  const [eventos, setEventos] = useState([]); // <-- NUEVO: Estado para Eventos
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
   const [filtroJuego, setFiltroJuego] = useState("");
@@ -41,16 +42,23 @@ function AdminView({ baseURL }) {
 
   const [formData, setFormData] = useState({
     ID: null, Nombre: "", Descripcion_mision: "", Puntos: 0,
-    JuegoId: "", Grupo: "", Activa: true,
+    JuegoId: "", Grupo: "", Activa: true, ID_Evento: "", // <-- NUEVO: ID_Evento añadido
   });
   const [imagenes, setImagenes] = useState([]);
   const [nuevosArchivos, setNuevosArchivos] = useState([]);
 
-  // --- ESCUDOS AÑADIDOS AQUI: Validamos que la respuesta sea Array.isArray() ---
   useEffect(() => {
     fetch(`${baseURL}/juegos`)
       .then(r => r.json())
       .then(data => setJuegos(Array.isArray(data) ? data : []))
+      .catch(console.error);
+  }, [baseURL]);
+
+  // <-- NUEVO: Cargar Eventos
+  useEffect(() => {
+    fetch(`${baseURL}/eventos`)
+      .then(r => r.json())
+      .then(data => setEventos(Array.isArray(data) ? data : []))
       .catch(console.error);
   }, [baseURL]);
 
@@ -117,7 +125,8 @@ function AdminView({ baseURL }) {
         const m = misiones.find(x => x.ID === id);
         return fetch(`${baseURL}/misiones/${id}`, {
           method: "PUT", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ Nombre: m.Nombre, Descripcion_mision: m.Descripcion_mision, Puntos: m.Puntos, Juego: m.JuegoId || null, Grupo: m.Grupo || null, Activa: activar ? 1 : 0 }),
+          // <-- NUEVO: Incluir ID_Evento
+          body: JSON.stringify({ Nombre: m.Nombre, Descripcion_mision: m.Descripcion_mision, Puntos: m.Puntos, Juego: m.JuegoId || null, Grupo: m.Grupo || null, Activa: activar ? 1 : 0, ID_Evento: m.ID_Evento || null }),
         });
       }));
       setMisionesSeleccionadas([]);
@@ -126,13 +135,13 @@ function AdminView({ baseURL }) {
   };
 
   const abrirFormularioNuevo = () => {
-    setFormData({ ID: null, Nombre: "", Descripcion_mision: "", Puntos: 0, JuegoId: "", Grupo: "", Activa: true });
+    setFormData({ ID: null, Nombre: "", Descripcion_mision: "", Puntos: 0, JuegoId: "", Grupo: "", Activa: true, ID_Evento: "" }); // <-- NUEVO: Resetear ID_Evento
     setImagenes([]); setNuevosArchivos([]);
     setMostrarFormulario(true);
   };
 
   const editarMision = (m) => {
-    setFormData({ ID: m.ID, Nombre: m.Nombre, Descripcion_mision: m.Descripcion_mision, Puntos: m.Puntos, JuegoId: m.JuegoId || "", Grupo: m.Grupo || "", Activa: m.Activa === 1 });
+    setFormData({ ID: m.ID, Nombre: m.Nombre, Descripcion_mision: m.Descripcion_mision, Puntos: m.Puntos, JuegoId: m.JuegoId || "", Grupo: m.Grupo || "", Activa: m.Activa === 1, ID_Evento: m.ID_Evento || "" }); // <-- NUEVO: Cargar ID_Evento
     setMostrarFormulario(true);
   };
 
@@ -165,7 +174,8 @@ function AdminView({ baseURL }) {
     const url = formData.ID ? `${baseURL}/misiones/${formData.ID}` : `${baseURL}/misiones`;
     const res = await fetch(url, {
       method: metodo, headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ Nombre: formData.Nombre, Descripcion_mision: formData.Descripcion_mision, Puntos: formData.Puntos, Juego: formData.JuegoId || null, Grupo: formData.Grupo || null, Activa: formData.Activa ? 1 : 0 }),
+      // <-- NUEVO: Enviar ID_Evento
+      body: JSON.stringify({ Nombre: formData.Nombre, Descripcion_mision: formData.Descripcion_mision, Puntos: formData.Puntos, Juego: formData.JuegoId || null, Grupo: formData.Grupo || null, Activa: formData.Activa ? 1 : 0, ID_Evento: formData.ID_Evento || null }),
     });
     const mision = await res.json();
     const misionId = formData.ID || mision.ID;
@@ -208,7 +218,6 @@ function AdminView({ baseURL }) {
     setFormData(prev => ({ ...prev, JuegoId: data.id }));
   };
 
-  // --- ESCUDO: Aseguramos que 'misiones' siga siendo tratada como array ---
   const misionesSeguras = Array.isArray(misiones) ? misiones : [];
   
   const misionesFiltradas = misionesSeguras.filter(m => {
@@ -334,7 +343,7 @@ function AdminView({ baseURL }) {
                         <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--text-main)", marginBottom: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {m.Nombre}
                         </div>
-                        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
                           <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>{m.Puntos} pts</span>
                           {m.GrupoNombre && (
                             <span style={{
@@ -342,6 +351,14 @@ function AdminView({ baseURL }) {
                               borderRadius: "20px", background: "var(--bg-soft)",
                               border: "1px solid var(--border-color)", color: "var(--text-muted)"
                             }}>{m.GrupoNombre}</span>
+                          )}
+                          {/* <-- NUEVO: Píldora si pertenece a un evento --> */}
+                          {m.EventoNombre && (
+                            <span style={{
+                              fontSize: "0.68rem", fontWeight: 700, padding: "1px 7px",
+                              borderRadius: "20px", background: "rgba(var(--primary-rgb, 108,92,231), 0.1)",
+                              border: "1px solid var(--primary)", color: "var(--primary)"
+                            }}>🎟 {m.EventoNombre}</span>
                           )}
                           <span style={{
                             fontSize: "0.68rem", fontWeight: 700, padding: "1px 7px", borderRadius: "20px",
@@ -431,6 +448,62 @@ function AdminView({ baseURL }) {
           </div>
         </div>
 
+        {/* <-- NUEVO: Selector de Misión de Evento --> */}
+        {eventos.length > 0 && (
+          <div style={{
+            display: "flex", flexDirection: "column", gap: "10px",
+            padding: "14px 18px", background: "var(--bg-soft)",
+            border: "1px solid var(--border-color)", borderRadius: "10px"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              <input
+                type="checkbox"
+                checked={!!formData.ID_Evento} // true si ID_Evento tiene valor, false si está vacío
+                onChange={e => {
+                  if (!e.target.checked) {
+                    setFormData(prev => ({ ...prev, ID_Evento: "" }));
+                  } else {
+                    // Si lo marcan y no tienen evento seleccionado, seleccionamos el primero por defecto
+                    setFormData(prev => ({ ...prev, ID_Evento: eventos[0]?.ID || "" }));
+                  }
+                }}
+                style={{ width: "16px", height: "16px", cursor: "pointer", accentColor: "var(--primary)" }}
+              />
+              <div style={{ flex: 1 }}>
+                <span style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--text-main)" }}>
+                  ¿Es una misión de evento?
+                </span>
+                <span style={{ display: "block", fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "1px" }}>
+                  Solo será visible mientras el evento seleccionado esté activo.
+                </span>
+              </div>
+            </div>
+
+            {/* Muestra el selector solo si el checkbox está marcado */}
+            {!!formData.ID_Evento && (
+              <div style={{ marginTop: "8px" }}>
+                 <select
+                  name="ID_Evento"
+                  value={formData.ID_Evento}
+                  onChange={handleChange}
+                  style={{
+                    width: "100%", padding: "10px 12px", borderRadius: "8px",
+                    border: "1px solid var(--border-color)",
+                    background: "var(--bg-main)", color: "var(--text-main)",
+                    fontSize: "0.85rem", outline: "none"
+                  }}
+                >
+                  <option value="">Selecciona un evento...</option>
+                  {eventos.map(ev => (
+                    <option key={ev.ID} value={ev.ID}>{ev.Nombre}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+        )}
+        {/* <-- FIN Selector --> */}
+
         {[
           { label: "Nombre de la misión", name: "Nombre", type: "text", placeholder: "Ej: Capturar el primer Pokémon" },
           { label: "Puntos", name: "Puntos", type: "number", placeholder: "0" },
@@ -514,110 +587,4 @@ function AdminView({ baseURL }) {
           <button onClick={guardarMision} style={{
             marginTop: "8px", padding: "12px",
             background: "linear-gradient(135deg, var(--primary), var(--primary-dark))",
-            color: "#fff", border: "none", borderRadius: "10px",
-            fontWeight: 800, fontSize: "0.9rem", cursor: "pointer",
-            letterSpacing: "0.5px", transition: "opacity 0.15s"
-          }}
-            onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
-            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-          >
-            Guardar y añadir imágenes
-          </button>
-        )}
-
-        {formData.ID && (
-          <div style={{
-            background: "var(--bg-soft)", border: "1px solid var(--border-color)",
-            borderRadius: "12px", padding: "20px"
-          }}>
-            <h3 style={{ margin: "0 0 14px", fontSize: "0.88rem", fontWeight: 800, color: "var(--text-main)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-              Imágenes
-            </h3>
-
-            <label style={{
-              display: "inline-flex", alignItems: "center", gap: "8px",
-              background: "var(--bg-card)", border: "1px dashed var(--border-color)",
-              borderRadius: "8px", padding: "10px 16px",
-              fontSize: "0.82rem", fontWeight: 600, color: "var(--text-muted)",
-              cursor: "pointer", transition: "border-color 0.2s"
-            }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = "var(--primary)"}
-              onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border-color)"}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" />
-                <polyline points="21 15 16 10 5 21" />
-              </svg>
-              Seleccionar imágenes
-              <input type="file" multiple onChange={handleArchivosSeleccionados} style={{ display: "none" }} />
-            </label>
-
-            {(imagenes.length > 0 || nuevosArchivos.length > 0) && (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: "10px", marginTop: "14px" }}>
-                {imagenes.map(img => (
-                  <div key={img.ID} style={{
-                    borderRadius: "8px", overflow: "hidden", position: "relative",
-                    border: `2px solid ${img.principal ? "var(--primary)" : "var(--border-color)"}`,
-                    background: "var(--bg-card)"
-                  }}>
-                    <img src={`data:image/png;base64,${img.Imagen}`} alt="misión" style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} />
-                    <button onClick={() => cambiarImagenPrincipal(img.ID)} disabled={img.principal} style={{
-                      position: "absolute", bottom: 0, left: 0, right: 0,
-                      padding: "4px 0", fontSize: "0.6rem", fontWeight: 700,
-                      background: img.principal ? "var(--primary)" : "rgba(0,0,0,0.55)",
-                      color: "#fff", border: "none", cursor: img.principal ? "default" : "pointer",
-                      letterSpacing: "0.5px"
-                    }}>
-                      {img.principal ? "PRINCIPAL" : "Establecer"}
-                    </button>
-                  </div>
-                ))}
-
-                {nuevosArchivos.map((fileObj, index) => (
-                  <div key={index} style={{ borderRadius: "8px", overflow: "hidden", position: "relative", border: "2px dashed var(--primary)", background: "var(--bg-card)" }}>
-                    <img src={fileObj.preview} alt="preview" style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block", opacity: 0.7 }} />
-                    <button onClick={() => eliminarArchivoSeleccionado(index)} style={{
-                      position: "absolute", top: "4px", right: "4px",
-                      background: "var(--danger)", color: "#fff", border: "none",
-                      borderRadius: "50%", width: "22px", height: "22px",
-                      fontSize: "0.75rem", fontWeight: 900, cursor: "pointer",
-                      display: "flex", alignItems: "center", justifyContent: "center"
-                    }}>×</button>
-                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "4px 0", fontSize: "0.6rem", fontWeight: 700, color: "#fff", textAlign: "center", background: "var(--primary)", letterSpacing: "0.5px" }}>NUEVA</div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {nuevosArchivos.length > 0 && (
-              <button onClick={subirImagenes} style={{
-                marginTop: "12px", width: "100%", padding: "10px",
-                background: "var(--success)", color: "#fff", border: "none",
-                borderRadius: "8px", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer"
-              }}>
-                Confirmar subida ({nuevosArchivos.length} imagen{nuevosArchivos.length > 1 ? "es" : ""})
-              </button>
-            )}
-          </div>
-        )}
-
-        {formData.ID && (
-          <button onClick={guardarMision} style={{
-            padding: "13px", marginTop: "4px",
-            background: "linear-gradient(135deg, var(--primary), var(--primary-dark))",
-            color: "#fff", border: "none", borderRadius: "10px",
-            fontWeight: 800, fontSize: "0.95rem", cursor: "pointer",
-            letterSpacing: "0.5px", transition: "opacity 0.15s"
-          }}
-            onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
-            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-          >
-            Actualizar misión
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-export default AdminView;
+            color: "#
