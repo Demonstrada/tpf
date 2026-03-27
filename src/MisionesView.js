@@ -180,7 +180,7 @@ export default function MisionesView({ baseURL, usuarioData }) {
                 paddingBottom: "8px", display: "flex", alignItems: "center", gap: "8px" 
               }}>
                 {evento === "Misiones Generales" ? "🌟" : "🎟"} {evento}
-                {evento === "Misiones Generales" ? evento : `Evento - ${evento}`}
+                {evento === "Misiones Generales" ? "" : `Evento - ${evento}`}
               </h2>
 
               {/* Acordeones de Grupos dentro de este evento */}
