@@ -56,6 +56,7 @@ function MisionCard({ mision: m, onClick }) {
 
 export default function MisionesView({ baseURL, usuarioData }) {
   const [misiones, setMisiones] = useState([]);
+  const [eventosActivos, setEventosActivos] = useState([]); // <-- Estado para eventos activos
   const [misionSeleccionada, setMisionSeleccionada] = useState(null);
   const [descripcionHTML, setDescripcionHTML] = useState("");
   const [modalDescripcionVisible, setModalDescripcionVisible] = useState(false);
@@ -65,11 +66,24 @@ export default function MisionesView({ baseURL, usuarioData }) {
     fetch(`${baseURL}/misiones/${usuarioData.id}/${usuarioData.juegoId}`)
       .then(res => res.json())
       .then(data => setMisiones(Array.isArray(data) ? data : []))
-      .catch(err => console.error("Error cargando misiones: - MisionesView.js:68", err));
+      .catch(err => console.error("Error cargando misiones: - MisionesView.js:69", err));
+  };
+
+  const cargarEventos = () => {
+    fetch(`${baseURL}/eventos`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          // Filtramos solo los eventos que están activos
+          setEventosActivos(data.filter(ev => ev.Activo === 1));
+        }
+      })
+      .catch(err => console.error("Error cargando eventos: - MisionesView.js:81", err));
   };
 
   useEffect(() => {
     cargarMisiones();
+    cargarEventos();
   }, [usuarioData]);
 
   const abrirModalDescripcion = (mision) => {
@@ -104,9 +118,9 @@ export default function MisionesView({ baseURL, usuarioData }) {
         alert(metodo === "POST" ? "Registro guardado" : "Registro actualizado"); 
         setModalDescripcionVisible(false); 
         setDescripcionHTML(""); 
-        cargarMisiones(); // Recargar la lista de misiones para actualizar estado
+        cargarMisiones(); 
       })
-      .catch(err => console.error("Error guardando mision_usuario: - MisionesView.js:109", err));
+      .catch(err => console.error("Error guardando mision_usuario: - MisionesView.js:123", err));
   };
 
   const toggleSeccion = (clave) => {
@@ -134,100 +148,176 @@ export default function MisionesView({ baseURL, usuarioData }) {
 
   return (
     <>
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "2rem 1.5rem" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "2rem 1.5rem" }}>
+        
+        {/* CABECERA GENERAL */}
         <div style={{ marginBottom: "2rem" }}>
           <h1 style={{ margin: "0 0 4px", fontSize: "1.6rem", fontWeight: 800, color: "var(--text-main)", letterSpacing: "-0.5px" }}>
             {usuarioData.juegoNombre}
           </h1>
-          <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.88rem" }}>Misiones disponibles para tu juego</p>
+          <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.88rem" }}>Panel de misiones y progreso</p>
         </div>
 
-        {/* Tarjetas de Estadísticas */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(155px, 1fr))", gap: "12px", marginBottom: "1.5rem" }}>
-          {[
-            { label: "Completadas", value: `${completadas} / ${totalMisiones}`, color: "var(--success)" },
-            { label: "Pts. obtenidos", value: `${puntosObtenidos} pts`, color: "var(--primary)" },
-            { label: "Total disponible", value: `${puntosTotal} pts`, color: "var(--text-muted)" },
-            { label: "Progreso", value: `${progreso}%`, color: "var(--secondary, var(--primary))" },
-          ].map(k => (
-            <div key={k.label} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "16px 18px", position: "relative", overflow: "hidden" }}>
-              <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "6px" }}>{k.label}</div>
-              <div style={{ fontSize: "1.4rem", fontWeight: 800, color: k.color, lineHeight: 1 }}>{k.value}</div>
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", background: k.color, opacity: 0.35 }} />
+        {/* LAYOUT A 2 COLUMNAS (Misiones a la izquierda, Eventos a la derecha) */}
+        <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+          
+          {/* COLUMNA IZQUIERDA: MISIONES Y PROGRESO */}
+          <div style={{ flex: "1 1 600px", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            
+            {/* Tarjetas de Estadísticas */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "12px" }}>
+              {[
+                { label: "Completadas", value: `${completadas} / ${totalMisiones}`, color: "var(--success)" },
+                { label: "Pts. obtenidos", value: `${puntosObtenidos} pts`, color: "var(--primary)" },
+                { label: "Total disponible", value: `${puntosTotal} pts`, color: "var(--text-muted)" },
+                { label: "Progreso", value: `${progreso}%`, color: "var(--secondary, var(--primary))" },
+              ].map(k => (
+                <div key={k.label} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "16px 18px", position: "relative", overflow: "hidden" }}>
+                  <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "6px" }}>{k.label}</div>
+                  <div style={{ fontSize: "1.4rem", fontWeight: 800, color: k.color, lineHeight: 1 }}>{k.value}</div>
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", background: k.color, opacity: 0.35 }} />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Barra de Progreso */}
-        <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "16px 20px", marginBottom: "2rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.5px" }}>PROGRESO GLOBAL</span>
-            <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--text-main)" }}>{progreso}%</span>
-          </div>
-          <div style={{ height: "8px", background: "var(--border-color)", borderRadius: "4px", overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${progreso}%`, background: "linear-gradient(90deg, var(--primary), var(--secondary, var(--primary-dark)))", borderRadius: "4px", transition: "width 0.6s ease" }} />
-          </div>
-        </div>
+            {/* Barra de Progreso */}
+            <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "16px 20px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.5px" }}>PROGRESO GLOBAL</span>
+                <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--text-main)" }}>{progreso}%</span>
+              </div>
+              <div style={{ height: "8px", background: "var(--border-color)", borderRadius: "4px", overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${progreso}%`, background: "linear-gradient(90deg, var(--primary), var(--secondary, var(--primary-dark)))", borderRadius: "4px", transition: "width 0.6s ease" }} />
+              </div>
+            </div>
 
-        {/* Listado Doble Agrupación (Evento -> Grupo) */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-          {Object.keys(misionesAgrupadas).map(evento => (
-            <div key={evento}>
-              {/* Título del Evento */}
-              <h2 style={{ 
-                fontSize: "1.2rem", fontWeight: 800, color: "var(--text-main)", 
-                marginBottom: "1rem", borderBottom: "2px solid var(--border-color)", 
-                paddingBottom: "8px", display: "flex", alignItems: "center", gap: "8px" 
-              }}>
-                {evento === "Misiones Generales" ? "🌟" : "🎟"} {evento}
-              </h2>
+            {/* Listado Doble Agrupación (Evento -> Grupo) */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "2rem", marginTop: "1rem" }}>
+              {Object.keys(misionesAgrupadas).map(evento => (
+                <div key={evento}>
+                  {/* Título del Evento */}
+                  <h2 style={{ 
+                    fontSize: "1.2rem", fontWeight: 800, color: "var(--text-main)", 
+                    marginBottom: "1rem", borderBottom: "2px solid var(--border-color)", 
+                    paddingBottom: "8px", display: "flex", alignItems: "center", gap: "8px" 
+                  }}>
+                    {evento === "Misiones Generales" ? "🌟" : "🎟"} 
+                    {evento === "Misiones Generales" ? evento : `Evento - ${evento}`}
+                  </h2>
 
-              {/* Acordeones de Grupos dentro de este evento */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {Object.keys(misionesAgrupadas[evento]).map(grupo => {
-                  const lista = misionesAgrupadas[evento][grupo];
-                  const hechas = lista.filter(m => m.Validada === 1).length;
-                  const claveSeccion = `${evento}-${grupo}`;
-                  const isOpen = seccionesAbiertas[claveSeccion];
+                  {/* Acordeones de Grupos dentro de este evento */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    {Object.keys(misionesAgrupadas[evento]).map(grupo => {
+                      const lista = misionesAgrupadas[evento][grupo];
+                      const hechas = lista.filter(m => m.Validada === 1).length;
+                      const claveSeccion = `${evento}-${grupo}`;
+                      const isOpen = seccionesAbiertas[claveSeccion];
 
-                  return (
-                    <div key={grupo} style={{ border: "1px solid var(--border-color)", borderRadius: "14px", overflow: "hidden", background: "var(--bg-card)" }}>
-                      <button
-                        onClick={() => toggleSeccion(claveSeccion)}
-                        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "15px 20px", background: "none", border: "none", cursor: "pointer", borderBottom: isOpen ? "1px solid var(--border-color)" : "none", transition: "background 0.15s" }}
-                        onMouseEnter={e => e.currentTarget.style.background = "var(--bg-soft)"}
-                        onMouseLeave={e => e.currentTarget.style.background = "none"}
-                      >
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                          <div style={{
-                            width: "9px", height: "9px", borderRadius: "50%", flexShrink: 0,
-                            background: hechas === lista.length && lista.length > 0 ? "var(--success)" : hechas > 0 ? "var(--primary)" : "var(--border-color)",
-                            boxShadow: hechas === lista.length && lista.length > 0 ? "0 0 6px var(--success)" : "none",
-                          }} />
-                          <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-main)" }}>{grupo}</span>
-                          <span style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--text-muted)", background: "var(--bg-soft)", border: "1px solid var(--border-color)", padding: "2px 8px", borderRadius: "20px" }}>
-                            {hechas}/{lista.length}
-                          </span>
+                      return (
+                        <div key={grupo} style={{ border: "1px solid var(--border-color)", borderRadius: "14px", overflow: "hidden", background: "var(--bg-card)" }}>
+                          <button
+                            onClick={() => toggleSeccion(claveSeccion)}
+                            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "15px 20px", background: "none", border: "none", cursor: "pointer", borderBottom: isOpen ? "1px solid var(--border-color)" : "none", transition: "background 0.15s" }}
+                            onMouseEnter={e => e.currentTarget.style.background = "var(--bg-soft)"}
+                            onMouseLeave={e => e.currentTarget.style.background = "none"}
+                          >
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                              <div style={{
+                                width: "9px", height: "9px", borderRadius: "50%", flexShrink: 0,
+                                background: hechas === lista.length && lista.length > 0 ? "var(--success)" : hechas > 0 ? "var(--primary)" : "var(--border-color)",
+                                boxShadow: hechas === lista.length && lista.length > 0 ? "0 0 6px var(--success)" : "none",
+                              }} />
+                              <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-main)" }}>{grupo}</span>
+                              <span style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--text-muted)", background: "var(--bg-soft)", border: "1px solid var(--border-color)", padding: "2px 8px", borderRadius: "20px" }}>
+                                {hechas}/{lista.length}
+                              </span>
+                            </div>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                              style={{ transition: "transform 0.25s", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", flexShrink: 0 }}>
+                              <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                          </button>
+
+                          {isOpen && (
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))", gap: "14px", padding: "18px" }}>
+                              {lista.map(m => (
+                                <MisionCard key={m.ID} mision={m} onClick={() => abrirModalDescripcion(m)} />
+                              ))}
+                            </div>
+                          )}
                         </div>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                          style={{ transition: "transform 0.25s", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", flexShrink: 0 }}>
-                          <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                      </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
 
-                      {isOpen && (
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))", gap: "14px", padding: "18px" }}>
-                          {lista.map(m => (
-                            <MisionCard key={m.ID} mision={m} onClick={() => abrirModalDescripcion(m)} />
-                          ))}
+          </div>
+
+          {/* COLUMNA DERECHA: SIDEBAR DE EVENTOS ACTIVOS */}
+          <div style={{ flex: "0 0 320px", display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--text-main)", margin: "0 0 0.5rem 0", borderBottom: "2px solid var(--border-color)", paddingBottom: "8px" }}>
+              🎟 Eventos Activos
+            </h2>
+
+            {eventosActivos.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "2rem 1rem", color: "var(--text-muted)", background: "var(--bg-card)", border: "1px dashed var(--border-color)", borderRadius: "12px" }}>
+                <p style={{ margin: 0, fontSize: "0.85rem", fontWeight: 600 }}>No hay eventos activos en este momento</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {eventosActivos.map(ev => (
+                  <div key={ev.ID} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "14px", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                    
+                    {/* IMAGEN / PLACEHOLDER */}
+                    <div style={{ aspectRatio: "16/7", background: "var(--bg-soft)", position: "relative", overflow: "hidden" }}>
+                      {ev.Imagen_Base64
+                        ? <img src={`data:image/png;base64,${ev.Imagen_Base64}`} alt={ev.Nombre} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--border-color)", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "1px" }}>SIN IMAGEN</div>
+                      }
+                      {/* BADGES */}
+                      <div style={{ position: "absolute", top: "8px", left: "8px", display: "flex", gap: "5px", flexWrap: "wrap" }}>
+                        <span style={{ fontSize: "0.6rem", fontWeight: 800, padding: "2px 8px", borderRadius: "20px", background: "var(--success)", color: "#fff", letterSpacing: "0.5px" }}>
+                          ACTIVO
+                        </span>
+                        {ev.Es_Rivales === 1 && (
+                          <span style={{ fontSize: "0.6rem", fontWeight: 800, padding: "2px 8px", borderRadius: "20px", background: "var(--primary)", color: "#fff", letterSpacing: "0.5px" }}>
+                            RIVALES
+                          </span>
+                        )}
+                        {ev.Tiene_Combates === 1 && (
+                          <span style={{ fontSize: "0.6rem", fontWeight: 800, padding: "2px 8px", borderRadius: "20px", background: "rgba(0,0,0,0.55)", color: "#fff", letterSpacing: "0.5px" }}>
+                            BO{ev.Rondas_Mejor_De}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* INFO */}
+                    <div style={{ padding: "14px 16px", flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                      <h3 style={{ margin: 0, fontWeight: 800, fontSize: "0.95rem", color: "var(--text-main)" }}>{ev.Nombre}</h3>
+                      {ev.Juego_Nombre && (
+                        <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>{ev.Juego_Nombre}</span>
+                      )}
+                      
+                      {/* Mostrar si el evento da bonus de puntos o si tiene puntos por combate */}
+                      {(ev.Bonus_Puntos_Global > 0 || ev.Puntos_Victoria_Enfrentamiento > 0) && (
+                        <div style={{ marginTop: "6px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                          {ev.Bonus_Puntos_Global > 0 && (
+                            <span style={{ fontSize: "0.72rem", color: "var(--primary)", fontWeight: 700 }}>⭐ +{ev.Bonus_Puntos_Global} Puntos Globales</span>
+                          )}
+                          {ev.Puntos_Victoria_Enfrentamiento > 0 && (
+                            <span style={{ fontSize: "0.72rem", color: "var(--success)", fontWeight: 700 }}>⚔️ +{ev.Puntos_Victoria_Enfrentamiento} Puntos por Combate</span>
+                          )}
                         </div>
                       )}
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
-            </div>
-          ))}
+            )}
+          </div>
         </div>
       </div>
 
