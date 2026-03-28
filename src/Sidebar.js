@@ -31,7 +31,7 @@ function Sidebar({ usuarioData, onChangeVista, onAbrirGaleria, onLogout, onChang
         <ul style={{ flex: 1, padding: 0, margin: 0, listStyle: "none" }}>
 
           <li className="menu-item" onClick={() => onChangeVista("dashboard")}>
-            Misiones
+            Inicio
           </li>
 
           <li className="menu-item" onClick={() => onChangeVista("torneos")}>
