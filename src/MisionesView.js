@@ -201,7 +201,7 @@ export default function MisionesView({ baseURL, usuarioData }) {
                                         marginBottom: "1rem", borderBottom: "2px solid var(--border-color)",
                                         paddingBottom: "8px", display: "flex", alignItems: "center", gap: "8px"
                                     }}>
-                                        {evento === "Misiones Generales" ? "🌟" : "🎟"}
+                                        {evento === "Misiones Generales" ? "🌟" : "⚜️"}
                                         {evento === "Misiones Generales" ? evento : `Evento - ${evento}`}
                                     </h2>
 
@@ -258,7 +258,7 @@ export default function MisionesView({ baseURL, usuarioData }) {
                     {/* COLUMNA DERECHA: SIDEBAR DE EVENTOS ACTIVOS MÁS COMPACTA */}
                     <div style={{ flex: "1 1 260px", minWidth: "240px", display: "flex", flexDirection: "column", gap: "1rem" }}>
                         <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--text-main)", margin: "0 0 0.5rem 0", borderBottom: "2px solid var(--border-color)", paddingBottom: "8px" }}>
-                            🎟 Eventos Activos
+                            ⚜️ Eventos Activos
                         </h2>
 
                         {eventosActivos.length === 0 ? (

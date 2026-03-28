@@ -31,7 +31,7 @@ function AdminView({ baseURL }) {
   const [juegos, setJuegos] = useState([]);
   const [misiones, setMisiones] = useState([]);
   const [grupos, setGrupos] = useState([]);
-  const [eventos, setEventos] = useState([]); // <-- NUEVO: Estado para Eventos
+  const [eventos, setEventos] = useState([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
   const [filtroJuego, setFiltroJuego] = useState("");
@@ -42,7 +42,7 @@ function AdminView({ baseURL }) {
 
   const [formData, setFormData] = useState({
     ID: null, Nombre: "", Descripcion_mision: "", Puntos: 0,
-    JuegoId: "", Grupo: "", Activa: true, ID_Evento: "", // <-- NUEVO: ID_Evento añadido
+    JuegoId: "", Grupo: "", Activa: true, ID_Evento: "",
   });
   const [imagenes, setImagenes] = useState([]);
   const [nuevosArchivos, setNuevosArchivos] = useState([]);
@@ -54,7 +54,6 @@ function AdminView({ baseURL }) {
       .catch(console.error);
   }, [baseURL]);
 
-  // <-- NUEVO: Cargar Eventos
   useEffect(() => {
     fetch(`${baseURL}/eventos`)
       .then(r => r.json())
@@ -352,13 +351,12 @@ function AdminView({ baseURL }) {
                               border: "1px solid var(--border-color)", color: "var(--text-muted)"
                             }}>{m.GrupoNombre}</span>
                           )}
-                          {/* <-- NUEVO: Píldora si pertenece a un evento --> */}
                           {m.EventoNombre && (
                             <span style={{
                               fontSize: "0.68rem", fontWeight: 700, padding: "1px 7px",
                               borderRadius: "20px", background: "rgba(var(--primary-rgb, 108,92,231), 0.1)",
                               border: "1px solid var(--primary)", color: "var(--primary)"
-                            }}>🎟 {m.EventoNombre}</span>
+                            }}>⚜️ {m.EventoNombre}</span>
                           )}
                           <span style={{
                             fontSize: "0.68rem", fontWeight: 700, padding: "1px 7px", borderRadius: "20px",
@@ -448,7 +446,6 @@ function AdminView({ baseURL }) {
           </div>
         </div>
 
-        {/* <-- NUEVO: Selector de Misión de Evento --> */}
         {eventos.length > 0 && (
           <div style={{
             display: "flex", flexDirection: "column", gap: "10px",
@@ -458,12 +455,11 @@ function AdminView({ baseURL }) {
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
               <input
                 type="checkbox"
-                checked={!!formData.ID_Evento} // true si ID_Evento tiene valor, false si está vacío
+                checked={!!formData.ID_Evento}
                 onChange={e => {
                   if (!e.target.checked) {
                     setFormData(prev => ({ ...prev, ID_Evento: "" }));
                   } else {
-                    // Si lo marcan y no tienen evento seleccionado, seleccionamos el primero por defecto
                     setFormData(prev => ({ ...prev, ID_Evento: eventos[0]?.ID || "" }));
                   }
                 }}
@@ -479,7 +475,6 @@ function AdminView({ baseURL }) {
               </div>
             </div>
 
-            {/* Muestra el selector solo si el checkbox está marcado */}
             {!!formData.ID_Evento && (
               <div style={{ marginTop: "8px" }}>
                  <select
@@ -502,7 +497,6 @@ function AdminView({ baseURL }) {
             )}
           </div>
         )}
-        {/* <-- FIN Selector --> */}
 
         {[
           { label: "Nombre de la misión", name: "Nombre", type: "text", placeholder: "Ej: Capturar el primer Pokémon" },
