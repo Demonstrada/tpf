@@ -145,7 +145,7 @@ export default function MisionesView({ baseURL, usuarioData }) {
     const puntosObtenidos = usuarioData?.puntos ?? 0;
     const puntosTotal = misiones.reduce((s, m) => s + (m.Puntos || 0), 0);
     const progreso = totalMisiones > 0 ? Math.round((completadas / totalMisiones) * 100) : 0;
-
+    console.log(usuarioData);
     return (
         <>
             <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "2rem 1.5rem" }}>
