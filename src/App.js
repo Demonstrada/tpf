@@ -81,7 +81,6 @@ function App() {
   const [contrasena, setContrasena] = useState("");
   const [mensaje, setMensaje] = useState("");
   
-  // <-- MODIFICADO: Leer usuario desde localStorage al iniciar -->
   const [usuarioData, setUsuarioData] = useState(() => {
     const guardado = localStorage.getItem('usuarioData');
     if (guardado) {
@@ -98,8 +97,6 @@ function App() {
   const [seleccionadaId, setSeleccionadaId] = useState(null);
 
   const [perfilVisible, setPerfilVisible] = useState(false);
-  
-  // <-- MODIFICADO: Leer vista actual desde localStorage al iniciar -->
   const [vista, setVista] = useState(() => {
     const vistaGuardada = localStorage.getItem('vistaActual');
     return vistaGuardada || "dashboard";
@@ -109,7 +106,7 @@ function App() {
   const handleRequestFullscreen = useCallback((iframeContent, stats) => { setFullscreenReplay({ iframeContent, stats }); }, []);
   const handleCloseFullscreen = useCallback(() => { setFullscreenReplay(null); }, []);
 
-  const baseURL = process.env.URL_BACKEND;
+  const baseURL = process.env.REACT_APP_URL_BACKEND;
   
 
   useEffect(() => {
@@ -159,7 +156,7 @@ function App() {
     fetch(`${baseURL}/imagenes/${tabla}/${registroId}`)
       .then(res => res.json())
       .then(data => { setImagenesGaleria(data); setGaleriaTabla(tabla); setGaleriaRegistroId(registroId); setGaleriaVisible(true); })
-      .catch(err => console.error("Error al abrir galería: - App.js:162", err));
+      .catch(err => console.error("Error al abrir galería: - App.js:159", err));
   };
 
   const asignarImagenPrincipal = (imagenId) => {
@@ -167,7 +164,7 @@ function App() {
     fetch(`${baseURL}/imagenes/principal`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usuarioId: usuarioData.id, tabla: galeriaTabla, registroId: galeriaRegistroId, imagenId }) })
       .then(async res => { if (!res.ok) { const e = await res.json(); throw new Error(e.error || "Error"); } return res.json(); })
       .then(() => { alert("Imagen asignada correctamente"); })
-      .catch(err => { console.error("Error asignando imagen principal: - App.js:170", err); alert("No autorizado."); });
+      .catch(err => { console.error("Error asignando imagen principal: - App.js:167", err); alert("No autorizado."); });
   };
 
   const handleArchivoSeleccionado = (e) => {
@@ -182,7 +179,7 @@ function App() {
     fetch(`${baseURL}/imagenes/nueva`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tabla: galeriaTabla, registroId: galeriaRegistroId, imagenBase64: nuevoArchivo }) })
       .then(res => res.json())
       .then(data => { setImagenesGaleria([...imagenesGaleria, { ID: data.ID, Imagen: data.Imagen }]); setNuevoArchivo(null); })
-      .catch(err => console.error("Error subiendo imagen: - App.js:185", err));
+      .catch(err => console.error("Error subiendo imagen: - App.js:182", err));
   };
 
   const cambiarTema = (nuevoTemaId) => {
@@ -190,7 +187,7 @@ function App() {
     setUsuarioData(newData);
     localStorage.setItem('usuarioData', JSON.stringify(newData)); // <-- Actualizar Storage
     fetch(`${baseURL}/usuarios/${usuarioData.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nombre: usuarioData.nombre, usuario: usuarioData.usuario, tema: nuevoTemaId }) })
-      .catch(err => console.error("Error guardando el tema: - App.js:193", err));
+      .catch(err => console.error("Error guardando el tema: - App.js:190", err));
   };
 
   // <-- NUEVO: Función wrapper para pasar a EditarPerfil y que actualice el localStorage -->
