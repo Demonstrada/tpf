@@ -142,10 +142,7 @@ export default function MisionesView({ baseURL, usuarioData }) {
     // ─── CÁLCULOS DEL HEADER ───
     const totalMisiones = misiones.length;
     const completadas = misiones.filter(m => m.Validada === 1).length;
-    
-    // AQUÍ ESTÁ EL CAMBIO: Ya no se calcula sumando misiones, usamos los puntos totales del usuario.
-    const puntosObtenidos = usuarioData?.puntos || 0; 
-
+    const puntosObtenidos = usuarioData?.puntos ?? 0;
     const puntosTotal = misiones.reduce((s, m) => s + (m.Puntos || 0), 0);
     const progreso = totalMisiones > 0 ? Math.round((completadas / totalMisiones) * 100) : 0;
 
