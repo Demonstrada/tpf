@@ -129,7 +129,7 @@ export default function MisionesView({ baseURL, usuarioData }) {
 
     // ─── LÓGICA DE AGRUPACIÓN (EVENTO -> GRUPO) ───
     const misionesAgrupadas = misiones.reduce((acc, m) => {
-        const nombreEvento = m.ID_Evento ? (m.EventoNombre || `Evento #${m.ID_Evento}`) : "Misiones Generales";
+        const nombreEvento = m.ID_Evento ? (m.EventoNombre || `Evento #${m.ID_Evento}`) : "Misiones";
         const nombreGrupo = m.Grupo || "Sin Grupo";
 
         if (!acc[nombreEvento]) acc[nombreEvento] = {};
@@ -201,8 +201,8 @@ export default function MisionesView({ baseURL, usuarioData }) {
                                         marginBottom: "1rem", borderBottom: "2px solid var(--border-color)",
                                         paddingBottom: "8px", display: "flex", alignItems: "center", gap: "8px"
                                     }}>
-                                        {evento === "Misiones Generales" ? "🌟" : "⚜️"}
-                                        {evento === "Misiones Generales" ? evento : `Evento - ${evento}`}
+                                        {evento === "Misiones" ? "🌟" : "⚜️"}
+                                        {evento === "Misiones" ? evento : `Evento - ${evento}`}
                                     </h2>
 
                                     {/* Acordeones de Grupos dentro de este evento */}
