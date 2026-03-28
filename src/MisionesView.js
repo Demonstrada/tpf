@@ -56,24 +56,19 @@ function MisionCard({ mision: m, onClick }) {
 
 export default function MisionesView({ baseURL, usuarioData }) {
     const [misiones, setMisiones] = useState([]);
-    const [eventosActivos, setEventosActivos] = useState([]);
+    const [eventosActivos, setEventosActivos] = useState([]); // <-- Estado para eventos activos
     const [misionSeleccionada, setMisionSeleccionada] = useState(null);
     const [descripcionHTML, setDescripcionHTML] = useState("");
     const [modalDescripcionVisible, setModalDescripcionVisible] = useState(false);
     const [seccionesAbiertas, setSeccionesAbiertas] = useState({});
-    const [usuario, setUsuario] = useState(null);
+
     const cargarMisiones = () => {
         fetch(`${baseURL}/misiones/${usuarioData.id}/${usuarioData.juegoId}`)
             .then(res => res.json())
             .then(data => setMisiones(Array.isArray(data) ? data : []))
             .catch(err => console.error("Error cargando misiones: - MisionesView.js:69", err));
     };
-    const cargarUsuario = () => {
-        fetch(`${baseURL}/usuarios/${usuarioData.id}`)
-            .then(res => res.json())
-            .then(data => setUsuario(data))
-            .catch(err => console.error("Error cargando usuario: - MisionesView.js:75", err));
-    };
+
     const cargarEventos = () => {
         fetch(`${baseURL}/eventos`)
             .then(res => res.json())
@@ -83,13 +78,12 @@ export default function MisionesView({ baseURL, usuarioData }) {
                     setEventosActivos(data.filter(ev => ev.Activo === 1));
                 }
             })
-            .catch(err => console.error("Error cargando eventos: - MisionesView.js:86", err));
+            .catch(err => console.error("Error cargando eventos: - MisionesView.js:81", err));
     };
 
     useEffect(() => {
         cargarMisiones();
         cargarEventos();
-        cargarUsuario();
     }, [usuarioData]);
 
     const abrirModalDescripcion = (mision) => {
@@ -126,7 +120,7 @@ export default function MisionesView({ baseURL, usuarioData }) {
                 setDescripcionHTML("");
                 cargarMisiones();
             })
-            .catch(err => console.error("Error guardando mision_usuario: - MisionesView.js:129", err));
+            .catch(err => console.error("Error guardando mision_usuario: - MisionesView.js:123", err));
     };
 
     const toggleSeccion = (clave) => {
@@ -148,10 +142,10 @@ export default function MisionesView({ baseURL, usuarioData }) {
     // ─── CÁLCULOS DEL HEADER ───
     const totalMisiones = misiones.length;
     const completadas = misiones.filter(m => m.Validada === 1).length;
-    const puntosObtenidos = usuario?.Puntos ?? 0;
+    const puntosObtenidos = usuarioData?.puntos ?? 0;
     const puntosTotal = misiones.reduce((s, m) => s + (m.Puntos || 0), 0);
     const progreso = totalMisiones > 0 ? Math.round((completadas / totalMisiones) * 100) : 0;
-    console.log(usuario);
+
     return (
         <>
             <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "2rem 1.5rem" }}>
