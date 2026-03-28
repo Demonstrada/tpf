@@ -237,7 +237,7 @@ export default function AdminEventosView({ baseURL, usuarioData }) {
       {/* CABECERA */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "2rem" }}>
         <div>
-          <h1 style={{ margin: "0 0 4px", fontSize: "1.5rem", fontWeight: 800, color: "var(--text-main)", letterSpacing: "-0.5px" }}>Eventos y Torneos</h1>
+          <h1 style={{ margin: "0 0 4px", fontSize: "1.5rem", fontWeight: 800, color: "var(--text-main)", letterSpacing: "-0.5px" }}>Eventos</h1>
           <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.85rem" }}>{eventos.length} evento{eventos.length !== 1 ? "s" : ""} registrado{eventos.length !== 1 ? "s" : ""}</p>
         </div>
         <button onClick={abrirModalCrear} style={{ background: "linear-gradient(135deg, var(--primary), var(--primary-dark))", color: "#fff", border: "none", borderRadius: "10px", padding: "10px 20px", fontWeight: 800, fontSize: "0.85rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}
