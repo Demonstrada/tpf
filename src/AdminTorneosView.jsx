@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import TorneoView from "./TorneoView";
 
 const ESTADO_CFG = {
     pendiente: { color: "var(--text-muted)", label: "Pendiente" },
