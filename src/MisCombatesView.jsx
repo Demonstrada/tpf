@@ -141,8 +141,51 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
         return pokes;
     };
 
-    const cargarVisor = (reporte) => {
-        const equipoDetallado = parsearEquipo(reporte.Equipo);
+    // Aplica un array de Pokémon parseados (paste) contra un array de slots del log.
+    // Usa tres pasadas: nickname+especie exacto → solo especie → contiene.
+    const mapearIntel = (teamLog, pasteArray) => {
+        const paste = [...pasteArray]; // copia para consumir sin mutar el original
+        // Pasada 1: nickname + especie exactos
+        teamLog.forEach(pk => {
+            const idx = paste.findIndex(p =>
+                p.species.toLowerCase() === pk.especie.toLowerCase() &&
+                p.nickname.toLowerCase() === pk.nickname.toLowerCase()
+            );
+            if (idx > -1) { pk.intel = paste[idx]; paste.splice(idx, 1); }
+        });
+        // Pasada 2: solo especie
+        teamLog.forEach(pk => {
+            if (pk.intel) return;
+            const idx = paste.findIndex(p => p.species.toLowerCase() === pk.especie.toLowerCase());
+            if (idx > -1) { pk.intel = paste[idx]; paste.splice(idx, 1); }
+        });
+        // Pasada 3: contiene (para formas alternativas)
+        teamLog.forEach(pk => {
+            if (pk.intel) return;
+            const idx = paste.findIndex(p =>
+                p.species.toLowerCase().includes(pk.especie.toLowerCase()) ||
+                pk.especie.toLowerCase().includes(p.species.toLowerCase())
+            );
+            if (idx > -1) { pk.intel = paste[idx]; paste.splice(idx, 1); }
+        });
+    };
+
+    const cargarVisor = (reporte, enf) => {
+        const equipoReporter = parsearEquipo(reporte.Equipo);
+
+        // Intentar obtener el equipo del rival si también reportó la misma ronda
+        const rivalId = enf
+            ? (Number(enf.ID_Jugador1) === Number(usuarioData.id) ? enf.ID_Jugador2 : enf.ID_Jugador1)
+            : null;
+        const reporteRival = rivalId
+            ? reportes.find(r =>
+                r.ID_Enfrentamiento === reporte.ID_Enfrentamiento &&
+                r.Ronda === reporte.Ronda &&
+                Number(r.ID_Jugador_Reporta) === Number(rivalId)
+            )
+            : null;
+        const equipoRival = parsearEquipo(reporteRival?.Equipo || "");
+
         const textoSaneado = reporte.Replay_Log.replace(/\\n/g, "\n");
         const matchHtml = textoSaneado.match(/<script[^>]*class="battle-log-data"[^>]*>([\s\S]*?)<\/script>/i);
         const textoCombate = matchHtml ? matchHtml[1] : textoSaneado;
@@ -196,10 +239,26 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
             }
         });
 
-        [...p1Team, ...p2Team].forEach(pk => {
-            const intel = equipoDetallado.find(i => i.species.toLowerCase() === pk.especie.toLowerCase());
-            if (intel) pk.intel = intel;
-        });
+        // ── Determinar en qué slot está el reporter ──────────────────────────
+        // Usamos el nombre del jugador en el log comparado con el nombre conocido del reporter.
+        const reporterNombre = enf
+            ? (Number(enf.ID_Jugador1) === Number(usuarioData.id)
+                ? enf.Jugador1_Nombre
+                : enf.Jugador2_Nombre)
+            : usuarioData.nombre || usuarioData.name || "";
+
+        const rn = reporterNombre.toLowerCase().trim();
+        const p1Lower = p1Name.toLowerCase().trim();
+        // Si el nombre del reporter coincide con p1 → el reporter es p1; si no, es p2.
+        const reporterEsP1 = rn && (p1Lower.includes(rn) || rn.includes(p1Lower));
+
+        const reporterTeam = reporterEsP1 ? p1Team : p2Team;
+        const rivalTeam   = reporterEsP1 ? p2Team : p1Team;
+
+        // Aplicar intel al equipo del reporter
+        mapearIntel(reporterTeam, equipoReporter);
+        // Aplicar intel al equipo rival (solo si se dispone de su paste)
+        if (equipoRival.length > 0) mapearIntel(rivalTeam, equipoRival);
 
         setStats({
             ganador, turnos, p1Name, p2Name, p1Team, p2Team,
@@ -411,7 +470,7 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
                                                             <span style={{ fontSize: "0.65rem", color: "#8b949e", letterSpacing: "1px" }}>RONDA {rNum}</span>
                                                             {result && <span style={{ width: "18px", height: "18px", borderRadius: "50%", background: resultColors[result], display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", fontWeight: 900, color: "#fff" }}>{resultLabels[result]}</span>}
                                                         </div>
-                                                        <RoundStatusBadge rep={rep} onView={() => cargarVisor(rep)} onEdit={() => setEditandoRonda({ enf, rNum })} />
+                                                        <RoundStatusBadge rep={rep} onView={() => cargarVisor(rep, enf)} onEdit={() => setEditandoRonda({ enf, rNum })} />
                                                     </div>
                                                 );
                                             })}
