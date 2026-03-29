@@ -146,7 +146,6 @@ function MatchCard({ partida, onForceResult, onReportar, isAdmin, equipos, usuar
     );
 }
 
-
 function RoundColumn({ ronda, hasNext, numSiguiente, roundIndex, onForceResult, onReportar, isAdmin, equipos, torneo, usuarioData }) {
     const esGranFinal = ronda.Rama === 'gran_final';
     const bo = esGranFinal && torneo?.Final_Rondas_Distintas ? torneo.Final_Rondas : (torneo?.Rondas_Partida || 3);
@@ -352,9 +351,19 @@ export default function TorneoView({ baseURL, torneo: torneoInicial, isAdmin, on
     if (!bracket) return null;
 
     const { rondas, equipos } = bracket;
-    const rondasGanadores = rondas.filter(r => r.Rama === 'ganadores');
+    
+    // Mantenemos las ramas originales modificables mediante 'let'
+    let rondasGanadores = rondas.filter(r => r.Rama === 'ganadores');
     const rondasPerdedores = rondas.filter(r => r.Rama === 'perdedores');
-    const rondasFinal = rondas.filter(r => r.Rama === 'gran_final');
+    let rondasFinal = rondas.filter(r => r.Rama === 'gran_final');
+
+    // ==========================================
+    // NUEVA LÓGICA: FUSIONAR PARA SINGLE ELIMINATION
+    // ==========================================
+    if (torneo?.Tipo_Bracket === 'single') {
+        rondasGanadores = [...rondasGanadores, ...rondasFinal];
+        rondasFinal = []; // Vaciamos rondasFinal para que el componente de abajo no renderice la caja separada
+    }
 
     const estadoCfg = { pendiente: { color: "var(--text-muted)", label: "Pendiente" }, en_curso: { color: "#ffa502", label: "En curso" }, finalizado: { color: "var(--success)", label: "Finalizado" } };
     const cfg = estadoCfg[torneo?.Estado] || estadoCfg.pendiente;
@@ -370,8 +379,9 @@ export default function TorneoView({ baseURL, torneo: torneoInicial, isAdmin, on
                         <h1 style={{ margin: 0, fontSize: "1.8rem", fontWeight: 900, color: "var(--text-main)", letterSpacing: "-0.5px" }}>{torneo?.Nombre}</h1>
                         <span style={{ fontSize: "0.65rem", fontWeight: 800, padding: "3px 10px", borderRadius: "20px", background: `${cfg.color}18`, border: `1px solid ${cfg.color}`, color: cfg.color, letterSpacing: "1px" }}>{cfg.label.toUpperCase()}</span>
                     </div>
+                    {/* TEXTO DESCRIPTIVO CORREGIDO */}
                     <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.85rem", fontWeight: 600 }}>
-                        {torneo?.Modo?.toUpperCase()} · {torneo?.Participantes} participantes · Doble eliminación {torneo?.Juego_Nombre && ` · ${torneo.Juego_Nombre}`} {torneo?.Rondas_Partida && ` · BO${torneo.Rondas_Partida}`} {torneo?.Final_Rondas_Distintas ? ` · Final BO${torneo.Final_Rondas}` : ""}
+                        {torneo?.Modo?.toUpperCase()} · {torneo?.Participantes} participantes · {torneo?.Tipo_Bracket === 'single' ? 'Eliminación directa' : 'Doble eliminación'} {torneo?.Juego_Nombre && ` · ${torneo.Juego_Nombre}`} {torneo?.Rondas_Partida && ` · BO${torneo.Rondas_Partida}`} {torneo?.Final_Rondas_Distintas ? ` · Final BO${torneo.Final_Rondas}` : ""}
                     </p>
                 </div>
                 <button onClick={cargarBracket} style={{ background: "var(--bg-soft)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "8px 14px", cursor: "pointer", color: "var(--text-muted)", fontSize: "0.78rem", fontWeight: 800, transition: "background 0.2s" }} onMouseEnter={e => e.target.style.background = "var(--border-color)"} onMouseLeave={e => e.target.style.background = "var(--bg-soft)"}>
