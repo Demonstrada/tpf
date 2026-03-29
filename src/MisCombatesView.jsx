@@ -568,8 +568,8 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
                                                 <input
                                                     type="file"
                                                     accept=".html,.txt"
+                                                    className="combat-file-input"
                                                     onChange={(e) => handleFileUpload(e, enf.ID, rNum)}
-                                                    style={{ fontSize: "0.7rem", color: "#c9d1d9", maxWidth: "180px" }}
                                                 />
                                             </div>
                                             <textarea

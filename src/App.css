@@ -1,5 +1,6 @@
 /* ==================== VARIABLES DE TEMA ==================== */
-:root, [data-theme="1"] {
+:root,
+[data-theme="1"] {
   /* TEMA 1: PICU (Rosa / Lila) - INTACTO */
   --bg-grad-1: #ff9ff3;
   --bg-grad-2: #a29bfe;
@@ -161,9 +162,12 @@
   --accent: #ff6bcb;
 
   /* Fondos extraídos de las clases .combat-* */
-  --bg-main: #0d1117;          /* body del tema */
-  --bg-soft: #161b22;          /* sidebar, inputs */
-  --bg-card: rgba(22, 27, 34, 0.8);   /* .combat-stats-dashboard */
+  --bg-main: #0d1117;
+  /* body del tema */
+  --bg-soft: #161b22;
+  /* sidebar, inputs */
+  --bg-card: rgba(22, 27, 34, 0.8);
+  /* .combat-stats-dashboard */
   --bg-card-glass: rgba(22, 27, 34, 0.97);
 
   /* Texto extraído de #c9d1d9 / #8b949e */
@@ -175,9 +179,11 @@
   --border-light: #ff4757;
 
   /* Estados */
-  --success: #10b981;          /* .is-alive */
+  --success: #10b981;
+  /* .is-alive */
   --success-hover: #059669;
-  --danger: #ff4757;           /* .combat-btn-danger */
+  --danger: #ff4757;
+  /* .combat-btn-danger */
   --danger-hover: #ff6b81;
   --info: #00d2d3;
 
@@ -185,7 +191,8 @@
 
   /* Sidebar */
   --sidebar-menu-bg: transparent;
-  --sidebar-menu-hover: rgba(255, 71, 87, 0.1);  /* .theme-combat .menu-item:hover */
+  --sidebar-menu-hover: rgba(255, 71, 87, 0.1);
+  /* .theme-combat .menu-item:hover */
 
   /* Premium / modales */
   --premium-bg: #161b22;
@@ -231,6 +238,7 @@
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
@@ -537,7 +545,8 @@
   display: grid;
   place-content: center;
   margin: 0;
-  pointer-events: none; /* Porque es readOnly, no queremos que interactúen con él */
+  pointer-events: none;
+  /* Porque es readOnly, no queremos que interactúen con él */
 }
 
 /* Dibujar el tic de "check" usando SVG via CSS polygon */
@@ -584,6 +593,7 @@
   z-index: 999;
   backdrop-filter: blur(6px);
 }
+
 /* ==================== GALERÍA - Botón Imagen Principal ==================== */
 .btn-imagen-principal {
   margin-top: 4px;
@@ -1028,7 +1038,7 @@
 
 .galeria-item:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .galeria-item.selected {
@@ -1038,7 +1048,7 @@
 
 .galeria-item.principal {
   border-color: var(--secondary);
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
 .badge-principal {
@@ -1051,7 +1061,7 @@
   font-weight: bold;
   padding: 0.3rem 0.6rem;
   border-radius: 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 2;
   backdrop-filter: blur(2px);
 }
@@ -1131,7 +1141,7 @@
   font-size: 1.2rem;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 500px;
   text-transform: uppercase;
@@ -1140,8 +1150,9 @@
 
 .btn-guardar-perfil:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
 }
+
 /* ==================== ADMIN VIEW ==================== */
 .admin-view {
   max-width: 1000px;
@@ -1150,7 +1161,7 @@
   background: linear-gradient(135deg, var(--bg-card), var(--bg-soft));
   border: 2px solid var(--primary);
   border-radius: 1.5rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   font-family: "Poppins", sans-serif;
   color: var(--primary-dark);
 }
@@ -1160,7 +1171,7 @@
   color: var(--accent);
   margin-bottom: 1.5rem;
   text-align: center;
-  text-shadow: 0 0 6px rgba(0,0,0,0.1);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }
 
 .form-admin {
@@ -1186,7 +1197,7 @@
   outline: none;
   border-color: var(--primary);
   background: var(--bg-soft);
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .form-admin textarea {
@@ -1208,7 +1219,7 @@
 
 .form-admin button:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
 /* Misiones existentes */
@@ -1244,7 +1255,7 @@
 
 .admin-view ul li button:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Estilo para todos los inputs y selects del formulario */
@@ -1268,7 +1279,7 @@
 .form-admin textarea:focus,
 .form-admin select:focus {
   border-color: var(--primary-dark);
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
   outline: none;
 }
 
@@ -1395,7 +1406,7 @@
   padding: 2rem;
   background: linear-gradient(135deg, var(--bg-main), var(--bg-soft));
   border-radius: 1.5rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   font-family: "Poppins", sans-serif;
   color: var(--primary-dark);
 }
@@ -1409,7 +1420,7 @@
   background: var(--bg-card);
   padding: 1rem;
   border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .alta-form input,
@@ -1428,7 +1439,7 @@
 .alta-form select:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .alta-form button {
@@ -1444,7 +1455,7 @@
 
 .alta-form button:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Tabla de usuarios (duplicada con variantes) */
@@ -1453,7 +1464,7 @@
   border-collapse: collapse;
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   background: var(--bg-card);
 }
 
@@ -1581,7 +1592,7 @@
 .form-admin select:focus {
   outline: none;
   border-color: var(--primary-dark);
-  box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
   background: var(--bg-card);
 }
 
@@ -1668,6 +1679,7 @@
   color: var(--danger);
   border: 1px solid var(--danger);
 }
+
 .check-validada.rechazada input[type="checkbox"] {
   border-color: var(--danger);
   background-color: var(--bg-soft);
@@ -1696,7 +1708,7 @@
   padding: 1.5rem;
   border-radius: 1rem;
   border: 1px solid var(--border-light);
-  box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
 .team-box h4 {
@@ -1746,10 +1758,11 @@
 }
 
 .sprite-alive {
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
-.poke-name-alive, .poke-name-dead {
+.poke-name-alive,
+.poke-name-dead {
   font-weight: 600;
   font-size: 0.8rem;
   color: var(--text-main);
@@ -1820,7 +1833,7 @@
 
 .btn-secondary {
   background: linear-gradient(135deg, var(--border-color), var(--text-muted)) !important;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
 }
 
 .layout-split {
@@ -1872,17 +1885,18 @@
   height: 100px;
   font-size: 2rem;
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   padding-left: 8px;
 }
 
 .btn-play-massive:hover {
   transform: scale(1.1);
-  box-shadow: 0 0 30px rgba(0,0,0,0.3);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
 }
 
-.playing-animation, .finished-animation {
+.playing-animation,
+.finished-animation {
   color: white;
   font-size: 1.5rem;
   font-weight: bold;
@@ -1898,7 +1912,7 @@
   background: var(--bg-card);
   padding: 1.5rem;
   border-radius: 1rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--border-light);
 }
 
@@ -1977,6 +1991,42 @@
 
 /* ==================== THEME: COMBAT (DARK MODE AGRESIVO) ==================== */
 /* Solo se activa cuando la vista es "replay" (SE MANTIENE INTACTO Y OSCURO) */
+/* ==================== COMBAT FILE INPUT ==================== */
+.combat-file-input {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-family: monospace;
+  width: 100%;
+  max-width: 250px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Estiliza el botón nativo de "Seleccionar archivo" */
+.combat-file-input::file-selector-button {
+  background: rgba(0, 210, 211, 0.08);
+  border: 1px solid var(--info);
+  color: var(--info);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  cursor: pointer;
+  margin-right: 12px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Efecto Hover estilo Combat */
+.combat-file-input::file-selector-button:hover {
+  background: var(--info);
+  color: #0d1117;
+  /* Contraste oscuro para el texto al hacer hover */
+  box-shadow: 0 0 12px rgba(0, 210, 211, 0.4);
+  transform: translateY(-1px);
+}
 
 .theme-combat {
   background: radial-gradient(circle at center, #1a1e24 0%, #0d1117 100%) !important;
@@ -2104,7 +2154,9 @@
   box-shadow: inset 0 0 10px rgba(0, 210, 211, 0.1);
 }
 
-.combat-btn-primary, .combat-btn-danger, .combat-btn-stealth {
+.combat-btn-primary,
+.combat-btn-danger,
+.combat-btn-stealth {
   width: 100%;
   padding: 1rem;
   border: none;
@@ -2122,24 +2174,45 @@
   box-shadow: 0 0 15px rgba(0, 210, 211, 0.4);
 }
 
-.combat-btn-primary:hover:not(:disabled) { background: #00e8e8; transform: scale(1.02); }
-.combat-btn-primary:disabled { background: #30363d; color: #8b949e; cursor: not-allowed; box-shadow: none; }
+.combat-btn-primary:hover:not(:disabled) {
+  background: #00e8e8;
+  transform: scale(1.02);
+}
+
+.combat-btn-primary:disabled {
+  background: #30363d;
+  color: #8b949e;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 
 .combat-btn-danger {
   background: #ff4757;
   color: #fff;
   box-shadow: 0 0 20px rgba(255, 71, 87, 0.4);
 }
-.combat-btn-danger:hover { background: #ff6b81; transform: scale(1.05); }
+
+.combat-btn-danger:hover {
+  background: #ff6b81;
+  transform: scale(1.05);
+}
 
 .combat-btn-stealth {
   background: transparent;
   color: #8b949e;
   border: 2px solid #30363d;
 }
-.combat-btn-stealth:hover { border-color: #c9d1d9; color: #fff; }
 
-.combat-centered { display: flex; justify-content: center; }
+.combat-btn-stealth:hover {
+  border-color: #c9d1d9;
+  color: #fff;
+}
+
+.combat-centered {
+  display: flex;
+  justify-content: center;
+}
+
 .combat-alert-box {
   background: rgba(22, 27, 34, 0.9);
   border: 2px solid #ff4757;
@@ -2149,9 +2222,23 @@
   max-width: 600px;
   box-shadow: 0 15px 50px rgba(255, 71, 87, 0.15);
 }
-.combat-icon-large { font-size: 4rem; margin-bottom: 1rem; }
-.combat-alert-box h3 { color: #fff !important; font-size: 1.8rem; margin-bottom: 1rem; }
-.combat-actions { display: flex; gap: 1rem; margin-top: 2rem; }
+
+.combat-icon-large {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.combat-alert-box h3 {
+  color: #fff !important;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.combat-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
 
 .combat-iframe-wrapper {
   width: 100%;
@@ -2202,7 +2289,7 @@
   border-radius: 10px;
   text-align: center;
   min-width: 200px;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .combat-kpi-card.winner-kpi {
@@ -2223,7 +2310,10 @@
   font-weight: 900;
   color: #fff;
 }
-.winner-kpi .kpi-value { color: #ff4757; }
+
+.winner-kpi .kpi-value {
+  color: #ff4757;
+}
 
 .combat-teams-wrapper {
   display: flex;
@@ -2298,13 +2388,34 @@
   text-align: center;
 }
 
-.is-alive { border-bottom: 3px solid #10b981; }
-.is-alive img { filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3)); }
-.is-alive .combat-state-badge { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
+.is-alive {
+  border-bottom: 3px solid #10b981;
+}
 
-.is-dead { border-bottom: 3px solid #ff4757; opacity: 0.8; }
-.is-dead img { filter: grayscale(100%) brightness(0.7); }
-.is-dead .combat-state-badge { background: rgba(255, 71, 87, 0.1); color: #ff4757; border: 1px solid #ff4757; }
+.is-alive img {
+  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));
+}
+
+.is-alive .combat-state-badge {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid #10b981;
+}
+
+.is-dead {
+  border-bottom: 3px solid #ff4757;
+  opacity: 0.8;
+}
+
+.is-dead img {
+  filter: grayscale(100%) brightness(0.7);
+}
+
+.is-dead .combat-state-badge {
+  background: rgba(255, 71, 87, 0.1);
+  color: #ff4757;
+  border: 1px solid #ff4757;
+}
 
 .combat-poke-name {
   color: #c9d1d9;
@@ -2332,7 +2443,7 @@
   padding: 2rem;
   background: linear-gradient(135deg, var(--bg-main), var(--bg-soft));
   border-radius: 1.5rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   font-family: "Poppins", sans-serif;
   color: var(--text-main);
 }
@@ -2374,7 +2485,7 @@
 
 .evento-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
   border-color: var(--border-light);
 }
 
@@ -2421,8 +2532,17 @@
   letter-spacing: 0.5px;
 }
 
-.badge-estado.activo { background: var(--bg-soft); color: var(--success); border: 1px solid var(--success); }
-.badge-estado.inactivo { background: var(--bg-main); color: var(--text-muted); border: 1px solid var(--border-light); }
+.badge-estado.activo {
+  background: var(--bg-soft);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+
+.badge-estado.inactivo {
+  background: var(--bg-main);
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+}
 
 /* Botones de acción dentro de la tarjeta */
 .evento-acciones {
@@ -2447,14 +2567,21 @@
   color: var(--primary-dark);
   border: 1px solid var(--primary);
 }
-.btn-accion.outline:hover { background: var(--bg-soft); }
+
+.btn-accion.outline:hover {
+  background: var(--bg-soft);
+}
 
 .btn-accion.primary {
   background: linear-gradient(90deg, var(--primary), var(--secondary));
   color: white;
   border: none;
 }
-.btn-accion.primary:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.2); transform: scale(1.02); }
+
+.btn-accion.primary:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+}
 
 /* Switch personalizado para los formularios */
 .switch-group {
@@ -2468,8 +2595,17 @@
   cursor: pointer;
   transition: background 0.2s ease;
 }
-.switch-group:hover { background: var(--bg-main); }
-.switch-group label { margin: 0; cursor: pointer; color: var(--text-main); font-weight: 600; }
+
+.switch-group:hover {
+  background: var(--bg-main);
+}
+
+.switch-group label {
+  margin: 0;
+  cursor: pointer;
+  color: var(--text-main);
+  font-weight: 600;
+}
 
 .switch-group input[type="checkbox"] {
   appearance: auto !important;
@@ -2479,7 +2615,10 @@
   accent-color: var(--primary-dark);
   margin: 0;
 }
-.switch-group input[type="checkbox"]::before { display: none !important; }
+
+.switch-group input[type="checkbox"]::before {
+  display: none !important;
+}
 
 /* Tabla de enfrentamientos dentro del modal */
 .table-enfrentamientos {
@@ -2507,8 +2646,16 @@
   color: var(--text-main);
 }
 
-.player-name { font-weight: 600; }
-.vs-text { color: var(--border-color); font-size: 0.85rem; font-weight: bold; text-align: center; }
+.player-name {
+  font-weight: 600;
+}
+
+.vs-text {
+  color: var(--border-color);
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-align: center;
+}
 
 /* ==============================================================
    MODAL PREMIUM (PERFIL Y CONFIGURACIONES)
@@ -2534,7 +2681,7 @@
   max-width: 650px;
   background: var(--premium-bg);
   border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0,0,0,0.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
   z-index: 2001;
   display: flex;
   flex-direction: column;
@@ -2646,7 +2793,7 @@
   outline: none;
   border-color: var(--premium-indigo);
   background: var(--premium-bg);
-  box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
 .premium-input-group input::placeholder {
@@ -2696,7 +2843,7 @@
 
 .premium-gallery-item.is-main {
   border-color: var(--premium-indigo);
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
 }
 
 .premium-badge {
@@ -2812,7 +2959,7 @@
 .premium-btn-primary {
   padding: 0.6rem 1.5rem;
   border: none;
-  background: var(--premium-btn); 
+  background: var(--premium-btn);
   color: #ffffff;
   font-weight: 500;
   font-size: 0.95rem;
@@ -2827,11 +2974,13 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
 }
+
 /* ==============================================================
    RESPONSIVE Y ADAPTACIÓN AL ZOOM (PANTALLAS < 1100px)
    ============================================================== */
 
 @media (max-width: 1100px) {
+
   /* 1. El Sidebar deja de estar a la izquierda y pasa a la parte superior/inferior o se hace más pequeño */
   .dashboard {
     flex-direction: column;
@@ -2845,7 +2994,8 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 1rem;
-    overflow-x: auto; /* Permite scroll horizontal en el menú si hay muchas opciones */
+    overflow-x: auto;
+    /* Permite scroll horizontal en el menú si hay muchas opciones */
   }
 
   .sidebar .user-info {
@@ -2907,7 +3057,8 @@
   .misiones-grid,
   .galeria-grid,
   .inputs-grid {
-    grid-template-columns: 1fr !important; /* Todo a 1 sola columna si hay zoom extremo */
+    grid-template-columns: 1fr !important;
+    /* Todo a 1 sola columna si hay zoom extremo */
   }
 
   /* 5. Asegurar que las tarjetas de combates encajen */
@@ -2922,14 +3073,17 @@
    ============================================================== */
 @media (max-width: 768px) {
   .content {
-    padding: 1rem; /* Reducir padding para ganar espacio */
+    padding: 1rem;
+    /* Reducir padding para ganar espacio */
   }
-  
+
   .combat-iframe-wrapper iframe {
-    height: 350px; /* Hacer el iframe más pequeño en pantallas ajustadas */
+    height: 350px;
+    /* Hacer el iframe más pequeño en pantallas ajustadas */
   }
-  
+
   .btn-guardar-perfil {
-    width: 100%; /* Botones de acción ocupan todo el ancho */
+    width: 100%;
+    /* Botones de acción ocupan todo el ancho */
   }
 }
