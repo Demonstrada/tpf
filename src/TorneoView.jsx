@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 const ESTADO_CFG = {
-    pendiente:   { color: "var(--text-muted)",  label: "Pendiente"   },
-    en_curso:    { color: "#ffa502",             label: "En curso"    },
-    completada:  { color: "var(--success)",      label: "Completada"  },
-    bye:         { color: "var(--border-color)", label: "Bye"         },
+    pendiente: { color: "var(--text-muted)", label: "Pendiente" },
+    en_curso: { color: "#ffa502", label: "En curso" },
+    completada: { color: "var(--success)", label: "Completada" },
+    bye: { color: "var(--border-color)", label: "Bye" },
 };
 
 const resultColors = { win: "#10b981", draw: "#ffa502", loss: "#ff4757" };
@@ -29,7 +29,7 @@ function MatchCard({ partida, onForceResult, onReportar, isAdmin, equipos, usuar
 
     let winsE1 = 0, winsE2 = 0;
     const misReportes = partida.resultados?.filter(r => Number(r.ID_Jugador) === Number(usuarioData.id)) || [];
-    
+
     partida.resultados?.forEach(r => {
         if (r.Estado === 'validado') {
             if (Number(r.ID_Ganador_Declarado) === Number(partida.ID_Equipo1)) winsE1++;
@@ -50,9 +50,9 @@ function MatchCard({ partida, onForceResult, onReportar, isAdmin, equipos, usuar
     const rondaSiguiente = maxValidada + 1;
 
     const repRivalSiguiente = partida.resultados?.find(r => r.Ronda === rondaSiguiente && Number(r.ID_Jugador) !== Number(usuarioData.id));
-    
-    const rivalReportoRondaSiguiente = repRivalSiguiente 
-        && repRivalSiguiente.ID_Ganador_Declarado !== null 
+
+    const rivalReportoRondaSiguiente = repRivalSiguiente
+        && repRivalSiguiente.ID_Ganador_Declarado !== null
         && repRivalSiguiente.ID_Ganador_Declarado !== undefined
         && String(repRivalSiguiente.ID_Ganador_Declarado).trim() !== ""
         && String(repRivalSiguiente.ID_Ganador_Declarado) !== "null"
@@ -66,7 +66,7 @@ function MatchCard({ partida, onForceResult, onReportar, isAdmin, equipos, usuar
                 borderRadius: "6px",
                 overflow: "hidden",
                 transition: "all 0.2s",
-                width: "100%", 
+                width: "100%",
                 boxShadow: soyParticipante && partida.Estado !== 'completada' ? `0 0 12px ${rivalReportoRondaSiguiente ? 'rgba(255, 165, 2, 0.4)' : 'rgba(0, 210, 211, 0.4)'}` : "none",
                 position: "relative"
             }}
@@ -96,7 +96,7 @@ function MatchCard({ partida, onForceResult, onReportar, isAdmin, equipos, usuar
 
             {expanded && partida.Estado !== 'completada' && partida.ID_Equipo1 && partida.ID_Equipo2 && (
                 <div style={{ padding: "10px", borderTop: "1px solid var(--border-color)", background: "var(--bg-soft)", display: "flex", flexDirection: "column", gap: "8px" }}>
-                    
+
                     {soyParticipante && (
                         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", justifyContent: "center" }}>
                             {[...Array(bo)].map((_, i) => {
@@ -160,7 +160,7 @@ function RoundColumn({ ronda, hasNext, numSiguiente, roundIndex, onForceResult, 
 
     return (
         <div style={{ display: "flex", flexDirection: "column", width: "250px", flexShrink: 0, marginRight: hasNext ? `${lineW * 2}px` : "0" }}>
-            
+
             <div style={{ textAlign: "center", padding: "8px", borderRadius: "8px", background: "var(--bg-soft)", border: "1px solid var(--border-color)", borderTop: `3px solid ${branchColor}`, marginBottom: "15px", width: "100%", zIndex: 2, position: "relative", boxShadow: "0 4px 10px rgba(0,0,0,0.1)" }}>
                 <span style={{ fontSize: "0.75rem", fontWeight: 900, color: "var(--text-main)", letterSpacing: "1px", display: "block" }}>{ronda.Nombre.toUpperCase()}</span>
                 <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.5px" }}>MEJOR DE {bo}</span>
@@ -169,7 +169,7 @@ function RoundColumn({ ronda, hasNext, numSiguiente, roundIndex, onForceResult, 
             <div style={{ display: "flex", flexDirection: "column", flex: 1, position: "relative" }}>
                 {ronda.partidas.map((p, idx) => {
                     let connectorStyles = {};
-                    
+
                     if (isStraight) {
                         connectorStyles = {
                             position: "absolute", top: "50%", right: `-${lineW}px`, width: `${lineW}px`, height: "2px", background: "var(--border-color)", zIndex: 0
@@ -250,7 +250,7 @@ export default function TorneoView({ baseURL, torneo: torneoInicial, isAdmin, on
     const [error, setError] = useState(null);
 
     const [partidaReporte, setPartidaReporte] = useState(null);
-    const [partidaConflicto, setPartidaConflicto] = useState(null); 
+    const [partidaConflicto, setPartidaConflicto] = useState(null);
     const [formReporte, setFormReporte] = useState({ Ronda: 1, ID_Ganador_Extraido: "", Sube_Replay: true, Replay_Log: "", Equipo: "" });
 
     const torneo = bracket?.torneo || torneoInicial;
@@ -300,13 +300,13 @@ export default function TorneoView({ baseURL, torneo: torneoInicial, isAdmin, on
 
             if (res.ok) {
                 const result = await res.json();
-                if(result.estado === 'validado_match') alert("Resultado validado con tu rival. ¡Partida ganada, avanzando en el bracket!");
-                else if(result.estado === 'validado_ronda') alert("Ronda validada correctamente. Continuad jugando.");
-                else if(result.estado === 'disputa') alert("¡Disputa! Los reportes no coinciden.");
+                if (result.estado === 'validado_match') alert("Resultado validado con tu rival. ¡Partida ganada, avanzando en el bracket!");
+                else if (result.estado === 'validado_ronda') alert("Ronda validada correctamente. Continuad jugando.");
+                else if (result.estado === 'disputa') alert("¡Disputa! Los reportes no coinciden.");
                 else alert("Datos de ronda transmitidos. Esperando a tu rival.");
-                
+
                 setPartidaReporte(null);
-                cargarBracket(); 
+                cargarBracket();
             } else {
                 const err = await res.json();
                 alert("Error: " + err.error);
@@ -318,9 +318,9 @@ export default function TorneoView({ baseURL, torneo: torneoInicial, isAdmin, on
 
     const abrirReporte = (partida, rondaNum) => {
         const repRival = partida.resultados?.find(r => r.Ronda === rondaNum && Number(r.ID_Jugador) !== Number(usuarioData.id));
-        
-        const tieneReporteValido = repRival 
-            && repRival.ID_Ganador_Declarado !== null 
+
+        const tieneReporteValido = repRival
+            && repRival.ID_Ganador_Declarado !== null
             && repRival.ID_Ganador_Declarado !== undefined
             && String(repRival.ID_Ganador_Declarado).trim() !== ""
             && String(repRival.ID_Ganador_Declarado) !== "null";
@@ -335,15 +335,15 @@ export default function TorneoView({ baseURL, torneo: torneoInicial, isAdmin, on
     const procederAReportar = (partida, rondaNum) => {
         setPartidaConflicto(null);
         setPartidaReporte(partida);
-        
+
         const miRep = partida.resultados?.find(r => r.Ronda === rondaNum && Number(r.ID_Jugador) === Number(usuarioData.id));
-        
-        setFormReporte({ 
-            Ronda: rondaNum, 
-            ID_Ganador_Extraido: miRep ? String(miRep.ID_Ganador_Declarado) : "", 
-            Sube_Replay: miRep ? miRep.Sube_Replay === 1 : true, 
-            Replay_Log: miRep ? (miRep.Replay_Log || "") : "", 
-            Equipo: miRep ? (miRep.Equipo_Paste || "") : "" 
+
+        setFormReporte({
+            Ronda: rondaNum,
+            ID_Ganador_Extraido: miRep ? String(miRep.ID_Ganador_Declarado) : "",
+            Sube_Replay: miRep ? miRep.Sube_Replay === 1 : true,
+            Replay_Log: miRep ? (miRep.Replay_Log || "") : "",
+            Equipo: miRep ? (miRep.Equipo_Paste || "") : ""
         });
     };
 
@@ -374,7 +374,7 @@ export default function TorneoView({ baseURL, torneo: torneoInicial, isAdmin, on
                         {torneo?.Modo?.toUpperCase()} · {torneo?.Participantes} participantes · Doble eliminación {torneo?.Juego_Nombre && ` · ${torneo.Juego_Nombre}`} {torneo?.Rondas_Partida && ` · BO${torneo.Rondas_Partida}`} {torneo?.Final_Rondas_Distintas ? ` · Final BO${torneo.Final_Rondas}` : ""}
                     </p>
                 </div>
-                <button onClick={cargarBracket} style={{ background: "var(--bg-soft)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "8px 14px", cursor: "pointer", color: "var(--text-muted)", fontSize: "0.78rem", fontWeight: 800, transition: "background 0.2s" }} onMouseEnter={e => e.target.style.background="var(--border-color)"} onMouseLeave={e => e.target.style.background="var(--bg-soft)"}>
+                <button onClick={cargarBracket} style={{ background: "var(--bg-soft)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "8px 14px", cursor: "pointer", color: "var(--text-muted)", fontSize: "0.78rem", fontWeight: 800, transition: "background 0.2s" }} onMouseEnter={e => e.target.style.background = "var(--border-color)"} onMouseLeave={e => e.target.style.background = "var(--bg-soft)"}>
                     ↻ Actualizar
                 </button>
             </div>
@@ -392,13 +392,13 @@ export default function TorneoView({ baseURL, torneo: torneoInicial, isAdmin, on
                 </div>
             )}
 
-            <BracketSection titulo="BRACKET DE GANADORES" color="var(--success)" rondas={rondasGanadores} onForceResult={handleForceResult} onReportar={abrirReporte} isAdmin={isAdmin} equipos={equipos} torneo={torneo} usuarioData={usuarioData} />
+            <BracketSection titulo={torneo?.Tipo_Bracket === 'single' ? "CUADRO PRINCIPAL" : "BRACKET DE GANADORES"} color="var(--success)" rondas={rondasGanadores} onForceResult={handleForceResult} onReportar={abrirReporte} isAdmin={isAdmin} equipos={equipos} torneo={torneo} usuarioData={usuarioData} />
             <BracketSection titulo="BRACKET DE PERDEDORES" color="#ff4757" rondas={rondasPerdedores} onForceResult={handleForceResult} onReportar={abrirReporte} isAdmin={isAdmin} equipos={equipos} torneo={torneo} usuarioData={usuarioData} />
             <BracketSection titulo="FINAL" color="#ffa502" rondas={rondasFinal} onForceResult={handleForceResult} onReportar={abrirReporte} isAdmin={isAdmin} equipos={equipos} torneo={torneo} usuarioData={usuarioData} />
 
             {partidaConflicto && (() => {
-                const nombreGanadorPrevio = Number(partidaConflicto.repRival.ID_Ganador_Declarado) === Number(partidaConflicto.ID_Equipo1) 
-                                            ? partidaConflicto.Equipo1_Nombre : partidaConflicto.Equipo2_Nombre;
+                const nombreGanadorPrevio = Number(partidaConflicto.repRival.ID_Ganador_Declarado) === Number(partidaConflicto.ID_Equipo1)
+                    ? partidaConflicto.Equipo1_Nombre : partidaConflicto.Equipo2_Nombre;
                 return (
                     <>
                         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)", zIndex: 9998 }} onClick={() => setPartidaConflicto(null)} />

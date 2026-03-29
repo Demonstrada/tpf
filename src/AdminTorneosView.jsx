@@ -46,10 +46,10 @@ function Modal({ title, subtitle, onClose, onSubmit, submitLabel, children }) {
 }
 
 export default function AdminTorneosView({ baseURL, usuarioData }) {
-    const [torneos, setTorneos]       = useState([]);
-    const [juegos, setJuegos]         = useState([]);
-    const [usuarios, setUsuarios]     = useState([]);
-    const [loading, setLoading]       = useState(true);
+    const [torneos, setTorneos] = useState([]);
+    const [juegos, setJuegos] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const isAdmin = usuarioData?.administrador === 1;
 
@@ -57,10 +57,10 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
     const [torneoActivo, setTorneoActivo] = useState(null); // torneo para ver bracket
 
     // Modales
-    const [modalCrear,   setModalCrear]   = useState(false);
-    const [modalEquipo,  setModalEquipo]  = useState(null); // torneo al que añadir equipo
+    const [modalCrear, setModalCrear] = useState(false);
+    const [modalEquipo, setModalEquipo] = useState(null); // torneo al que añadir equipo
     const [confirmarIniciar, setConfirmarIniciar] = useState(null); // torneo a iniciar
-    
+
     // Control de Inscripciones y Usuarios
     const [usuariosInscritos, setUsuariosInscritos] = useState([]); // para bloquear duplicados
     const [miEquipoActual, setMiEquipoActual] = useState(null); // Si el usuario ya está en un equipo
@@ -70,7 +70,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
 
     // Forms
     const [formTorneo, setFormTorneo] = useState({
-        ID: null, Nombre: "", Modo: "1v1", ID_Juego: "", Participantes: 8,
+        ID: null, Nombre: "", Modo: "1v1", Tipo_Bracket: "double", ID_Juego: "", Participantes: 8,
         Rondas_Partida: 3, Final_Rondas_Distintas: false, Final_Rondas: 5, Aleatorio: false,
         Puntos_Por_Victoria: 0, Puntos_Ganador_Torneo: 0
     });
@@ -87,7 +87,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
 
     useEffect(() => {
         cargarTorneos();
-        
+
         fetch(`${baseURL}/juegos`)
             .then(r => r.json())
             .then(data => setJuegos(data.filter(j => j.Es_Pokemon === 1)))
@@ -117,7 +117,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
 
     const handleGuardarTorneo = async () => {
         if (!formTorneo.Nombre.trim()) return alert("El nombre es obligatorio.");
-        
+
         const method = formTorneo.ID ? "PUT" : "POST";
         const url = formTorneo.ID ? `${baseURL}/torneos/${formTorneo.ID}` : `${baseURL}/torneos`;
 
@@ -125,11 +125,11 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
             method: method, headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formTorneo)
         });
-        
+
         const data = await res.json();
-        if (data.success) { 
-            setModalCrear(false); 
-            cargarTorneos(); 
+        if (data.success) {
+            setModalCrear(false);
+            cargarTorneos();
         } else {
             alert(data.error || "Error al guardar torneo");
         }
@@ -139,7 +139,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
     const abrirModalEquipo = async (t) => {
         setModalEquipo(t);
         setFormEquipo({ Nombre: "", jugadores: Array(t.Modo === '2v2' ? 2 : 1).fill("") });
-        setUsuariosInscritos([]); 
+        setUsuariosInscritos([]);
         setEquiposIncompletos([]);
         setMiEquipoActual(null);
         setModoInscripcion("crear");
@@ -156,7 +156,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
 
                     data.equipos.forEach(eq => {
                         let idsEnEquipo = [];
-                        
+
                         if (eq.Jugadores_IDs) {
                             const ids = typeof eq.Jugadores_IDs === 'string' ? eq.Jugadores_IDs.split(',') : eq.Jugadores_IDs;
                             idsEnEquipo = ids.map(id => String(id).trim());
@@ -197,7 +197,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
     const handleAñadirEquipo = async () => {
         if (isAdmin) {
             if (!formEquipo.Nombre.trim()) return alert("El nombre del equipo es obligatorio.");
-            
+
             const idsSeleccionados = formEquipo.jugadores.filter(j => j !== "");
             if (new Set(idsSeleccionados).size !== idsSeleccionados.length) {
                 return alert("No puedes seleccionar al mismo jugador dos veces para el mismo equipo.");
@@ -213,7 +213,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
             const data = await res.json();
             if (data.success) { setModalEquipo(null); setFormEquipo({ Nombre: "", jugadores: [""] }); cargarTorneos(); }
             else alert(data.error || "Error");
-            
+
         } else {
             if (modalEquipo.Modo === '2v2' && modalEquipo.Aleatorio === 1) {
                 const res = await fetch(`${baseURL}/torneos/${modalEquipo.ID}/inscripcion-aleatoria`, {
@@ -221,7 +221,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
                     body: JSON.stringify({ ID_Jugador: usuarioData.id })
                 });
                 const data = await res.json();
-                if(data.success) { setModalEquipo(null); cargarTorneos(); } else alert(data.error);
+                if (data.success) { setModalEquipo(null); cargarTorneos(); } else alert(data.error);
 
             } else if (modalEquipo.Modo === '2v2' && modoInscripcion === 'unirse') {
                 if (!equipoSeleccionado) return alert("Selecciona un equipo al que unirte.");
@@ -230,7 +230,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
                     body: JSON.stringify({ ID_Jugador: usuarioData.id })
                 });
                 const data = await res.json();
-                if(data.success) { setModalEquipo(null); cargarTorneos(); } else alert(data.error);
+                if (data.success) { setModalEquipo(null); cargarTorneos(); } else alert(data.error);
 
             } else {
                 if (!formEquipo.Nombre.trim()) return alert("El nombre del equipo es obligatorio.");
@@ -239,7 +239,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
                     body: JSON.stringify({ Nombre: formEquipo.Nombre, jugadores: [{ ID: usuarioData.id, Es_Capitan: 1 }] })
                 });
                 const data = await res.json();
-                if(data.success) { setModalEquipo(null); cargarTorneos(); } else alert(data.error);
+                if (data.success) { setModalEquipo(null); cargarTorneos(); } else alert(data.error);
             }
         }
     };
@@ -376,7 +376,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
             {/* ── MODAL CREAR / EDITAR TORNEO ────────────────────────────────── */}
             {modalCrear && (
                 <Modal title={formTorneo.ID ? "Editar torneo" : "Nuevo torneo"} subtitle={formTorneo.ID ? "Modificar configuración" : "Configuración inicial del torneo"} onClose={() => setModalCrear(false)} onSubmit={handleGuardarTorneo} submitLabel={formTorneo.ID ? "Guardar cambios" : "Crear torneo"}>
-                    
+
                     <Field label="Nombre">
                         <input type="text" value={formTorneo.Nombre} onChange={e => setFormTorneo({ ...formTorneo, Nombre: e.target.value })} placeholder="Ej: Torneo de Otoño 2025" style={inputStyle}
                             onFocus={e => e.target.style.borderColor = "var(--primary)"} onBlur={e => e.target.style.borderColor = "var(--border-color)"} />
@@ -387,6 +387,12 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
                             <select disabled={!isTorneoPendiente(formTorneo.ID)} value={formTorneo.Modo} onChange={e => setFormTorneo({ ...formTorneo, Modo: e.target.value })} style={{ ...inputStyle, cursor: "pointer", opacity: !isTorneoPendiente(formTorneo.ID) ? 0.6 : 1 }}>
                                 <option value="1v1">1v1</option>
                                 <option value="2v2">2v2</option>
+                            </select>
+                        </Field>
+                        <Field label="Formato">
+                            <select disabled={!isTorneoPendiente(formTorneo.ID)} value={formTorneo.Tipo_Bracket} onChange={e => setFormTorneo({ ...formTorneo, Tipo_Bracket: e.target.value })} style={{ ...inputStyle, cursor: "pointer", opacity: !isTorneoPendiente(formTorneo.ID) ? 0.6 : 1 }}>
+                                <option value="double">Doble Eliminación</option>
+                                <option value="single">Eliminación Directa</option>
                             </select>
                         </Field>
                         <Field label="Participantes">
@@ -511,11 +517,11 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
 
             {/* ── MODAL AÑADIR/EDITAR EQUIPO (LÓGICA ADMIN VS JUGADOR) ───────── */}
             {modalEquipo && (
-                <Modal 
-                    title={miEquipoActual ? "Gestionar mi equipo" : "Inscripción"} 
-                    subtitle={modalEquipo.Nombre} 
-                    onClose={() => setModalEquipo(null)} 
-                    onSubmit={miEquipoActual ? handleEditarMiEquipo : handleAñadirEquipo} 
+                <Modal
+                    title={miEquipoActual ? "Gestionar mi equipo" : "Inscripción"}
+                    subtitle={modalEquipo.Nombre}
+                    onClose={() => setModalEquipo(null)}
+                    onSubmit={miEquipoActual ? handleEditarMiEquipo : handleAñadirEquipo}
                     submitLabel={miEquipoActual ? "Guardar cambios" : "Inscribirse"}
                 >
                     {isAdmin ? (
@@ -545,9 +551,9 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
                                             const isSelectedByPartner = modalEquipo.Modo === '2v2' && (i === 0 ? formEquipo.jugadores[1] === String(u.ID) : formEquipo.jugadores[0] === String(u.ID));
 
                                             return (
-                                                <option 
-                                                    key={u.ID} 
-                                                    value={u.ID} 
+                                                <option
+                                                    key={u.ID}
+                                                    value={u.ID}
                                                     disabled={isAlreadyInscribed || isSelectedByPartner}
                                                 >
                                                     {u.Nombre} {isAlreadyInscribed ? "(Ya inscrito)" : ""}
@@ -624,7 +630,7 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
                 <Modal title="Iniciar torneo" subtitle={confirmarIniciar.Nombre} onClose={() => setConfirmarIniciar(null)} onSubmit={handleIniciar} submitLabel="Generar bracket y empezar">
                     <div style={{ padding: "14px", background: "rgba(255,165,2,0.08)", border: "1px solid #ffa502", borderRadius: "8px" }}>
                         <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--text-main)", lineHeight: 1.6 }}>
-                            Esto generará el bracket de doble eliminación con <strong>{confirmarIniciar.Participantes} equipos</strong> sembrados aleatoriamente. 
+                            Esto generará el bracket de doble eliminación con <strong>{confirmarIniciar.Participantes} equipos</strong> sembrados aleatoriamente.
                             {confirmarIniciar.Modo === '2v2' && confirmarIniciar.Aleatorio === 1 ? " Se agrupará a los jugadores inscritos en parejas al azar automáticamente." : ""}
                             Una vez iniciado no se pueden añadir ni retirar equipos.
                         </p>
