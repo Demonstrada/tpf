@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
-import TorneoView from "./TorneoView";
+
+const ESTADO_CFG = {
+    pendiente: { color: "var(--text-muted)", label: "Pendiente" },
+    en_curso: { color: "#ffa502", label: "En curso" },
+    completada: { color: "var(--success)", label: "Completada" },
+    bye: { color: "var(--border-color)", label: "Bye" },
+};
+
+const resultColors = { win: "#10b981", draw: "#ffa502", loss: "#ff4757" };
+const resultLabels = { win: "V", draw: "E", loss: "D" };
 
 const inputStyle = {
     width: "100%", boxSizing: "border-box", padding: "10px 14px",
@@ -52,16 +61,16 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
 
     const isAdmin = usuarioData?.administrador === 1;
 
-    const [torneoActivo, setTorneoActivo] = useState(null); // torneo para ver bracket
+    const [torneoActivo, setTorneoActivo] = useState(null);
 
     const [modalCrear, setModalCrear] = useState(false);
-    const [modalEquipo, setModalEquipo] = useState(null); // torneo al que añadir equipo
-    const [confirmarIniciar, setConfirmarIniciar] = useState(null); // torneo a iniciar
+    const [modalEquipo, setModalEquipo] = useState(null);
+    const [confirmarIniciar, setConfirmarIniciar] = useState(null);
 
-    const [usuariosInscritos, setUsuariosInscritos] = useState([]); // para bloquear duplicados
-    const [miEquipoActual, setMiEquipoActual] = useState(null); // Si el usuario ya está en un equipo
-    const [modoInscripcion, setModoInscripcion] = useState("crear"); // "crear" o "unirse"
-    const [equiposIncompletos, setEquiposIncompletos] = useState([]); // Equipos de 1 persona esperando compañero
+    const [usuariosInscritos, setUsuariosInscritos] = useState([]);
+    const [miEquipoActual, setMiEquipoActual] = useState(null);
+    const [modoInscripcion, setModoInscripcion] = useState("crear");
+    const [equiposIncompletos, setEquiposIncompletos] = useState([]);
     const [equipoSeleccionado, setEquipoSeleccionado] = useState("");
 
     const [formTorneo, setFormTorneo] = useState({
@@ -84,7 +93,14 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
 
         fetch(`${baseURL}/juegos`)
             .then(r => r.json())
-            .then(data => setJuegos(data.filter(j => j.Es_Pokemon === 1)))
+            .then(data => {
+                // Filtro a prueba de balas (funciona con String "1", Number 1, Boolean true, o Buffer BIT)
+                setJuegos(data.filter(j => 
+                    j.Es_Pokemon == 1 || 
+                    j.Es_Pokemon === true || 
+                    (j.Es_Pokemon && j.Es_Pokemon.data && j.Es_Pokemon.data[0] === 1)
+                ));
+            })
             .catch(console.error);
 
         fetch(`${baseURL}/usuarios/lista-simple`)
@@ -307,7 +323,6 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
                         return (
                             <div key={t.ID} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderLeft: `4px solid ${color}`, borderRadius: "12px", padding: "16px 20px", display: "flex", alignItems: "center", gap: "16px" }}>
 
-                                {/* INFO */}
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px", flexWrap: "wrap" }}>
                                         <span style={{ fontWeight: 800, fontSize: "0.95rem", color: "var(--text-main)" }}>{t.Nombre}</span>
@@ -329,7 +344,6 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
                                     </div>
                                 </div>
 
-                                {/* ACCIONES */}
                                 <div style={{ display: "flex", gap: "6px", flexShrink: 0, flexWrap: "wrap" }}>
                                     {t.Estado === 'pendiente' && (
                                         <>
@@ -557,7 +571,6 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
                             <Field label="Editar Nombre del equipo">
                                 <input type="text" value={formEdicionEquipo.Nombre} onChange={e => setFormEdicionEquipo({ ...formEdicionEquipo, Nombre: e.target.value })} style={inputStyle} />
                             </Field>
-                            {/* Solo si es 2v2 y ya tienen pareja se deja cambiar el capitán */}
                             {modalEquipo.Modo === '2v2' && miEquipoActual.ids.length > 1 && (
                                 <Field label="Capitán del equipo">
                                     <select value={formEdicionEquipo.ID_Capitan} onChange={e => setFormEdicionEquipo({ ...formEdicionEquipo, ID_Capitan: e.target.value })} style={inputStyle}>
