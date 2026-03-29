@@ -146,21 +146,63 @@ function MatchCard({ partida, onForceResult, onReportar, isAdmin, equipos, usuar
     );
 }
 
-function RoundColumn({ ronda, onForceResult, onReportar, isAdmin, equipos, roundIndex, torneo, usuarioData }) {
+
+function RoundColumn({ ronda, hasNext, numSiguiente, roundIndex, onForceResult, onReportar, isAdmin, equipos, torneo, usuarioData }) {
     const esGranFinal = ronda.Rama === 'gran_final';
     const bo = esGranFinal && torneo?.Final_Rondas_Distintas ? torneo.Final_Rondas : (torneo?.Rondas_Partida || 3);
     const branchColor = ronda.Rama === 'ganadores' ? "var(--success)" : ronda.Rama === 'perdedores' ? "#ff4757" : "#ffa502";
 
+    const numActual = ronda.partidas.length;
+    const isConverging = hasNext && numSiguiente < numActual;
+    const isStraight = hasNext && numSiguiente === numActual;
+
+    const lineW = 30;
+
     return (
-        <div style={{ display: "flex", flexDirection: "column", width: "220px", flexShrink: 0 }}>
-            <div style={{ textAlign: "center", padding: "8px", borderRadius: "6px", background: "var(--bg-soft)", borderBottom: `2px solid ${branchColor}`, marginBottom: "20px", width: "100%" }}>
-                <span style={{ fontSize: "0.65rem", fontWeight: 900, color: "var(--text-main)", letterSpacing: "1px", display: "block" }}>{ronda.Nombre.toUpperCase()}</span>
-                <span style={{ fontSize: "0.6rem", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.5px" }}>MEJOR DE {bo}</span>
+        <div style={{ display: "flex", flexDirection: "column", width: "250px", flexShrink: 0, marginRight: hasNext ? `${lineW * 2}px` : "0" }}>
+            
+            <div style={{ textAlign: "center", padding: "8px", borderRadius: "8px", background: "var(--bg-soft)", border: "1px solid var(--border-color)", borderTop: `3px solid ${branchColor}`, marginBottom: "15px", width: "100%", zIndex: 2, position: "relative", boxShadow: "0 4px 10px rgba(0,0,0,0.1)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 900, color: "var(--text-main)", letterSpacing: "1px", display: "block" }}>{ronda.Nombre.toUpperCase()}</span>
+                <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.5px" }}>MEJOR DE {bo}</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-around", flex: 1, gap: "16px" }}>
-                {ronda.partidas.map(p => (
-                    <MatchCard key={p.ID} partida={p} onForceResult={onForceResult} onReportar={onReportar} isAdmin={isAdmin} equipos={equipos} usuarioData={usuarioData} bo={bo} />
-                ))}
+
+            <div style={{ display: "flex", flexDirection: "column", flex: 1, position: "relative" }}>
+                {ronda.partidas.map((p, idx) => {
+                    let connectorStyles = {};
+                    
+                    if (isStraight) {
+                        connectorStyles = {
+                            position: "absolute", top: "50%", right: `-${lineW}px`, width: `${lineW}px`, height: "2px", background: "var(--border-color)", zIndex: 0
+                        };
+                    } else if (isConverging) {
+                        if (idx % 2 === 0) {
+                            connectorStyles = {
+                                position: "absolute", top: "50%", right: `-${lineW}px`, width: `${lineW}px`, height: "50%",
+                                borderTop: "2px solid var(--border-color)", borderRight: "2px solid var(--border-color)", borderTopRightRadius: "6px", zIndex: 0
+                            };
+                        } else {
+                            connectorStyles = {
+                                position: "absolute", top: "0", right: `-${lineW}px`, width: `${lineW}px`, height: "50%",
+                                borderBottom: "2px solid var(--border-color)", borderRight: "2px solid var(--border-color)", borderBottomRightRadius: "6px", zIndex: 0
+                            };
+                        }
+                    }
+
+                    return (
+                        <div key={p.ID} style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", position: "relative", padding: "10px 0" }}>
+
+                            {roundIndex > 0 && (
+                                <div style={{ position: "absolute", top: "50%", left: `-${lineW}px`, width: `${lineW}px`, height: "2px", background: "var(--border-color)", zIndex: 0 }} />
+                            )}
+
+                            {hasNext && <div style={connectorStyles} />}
+
+                            <div style={{ position: "relative", zIndex: 1 }}>
+                                <MatchCard partida={p} onForceResult={onForceResult} onReportar={onReportar} isAdmin={isAdmin} equipos={equipos} usuarioData={usuarioData} bo={bo} />
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
@@ -169,15 +211,34 @@ function RoundColumn({ ronda, onForceResult, onReportar, isAdmin, equipos, round
 function BracketSection({ titulo, color, rondas, onForceResult, onReportar, isAdmin, equipos, torneo, usuarioData }) {
     if (rondas.length === 0) return null;
     return (
-        <div style={{ marginBottom: "3rem", background: "rgba(0,0,0,0.1)", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.5rem" }}>
-                <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: color, boxShadow: `0 0 10px ${color}` }} />
-                <span style={{ fontSize: "0.85rem", fontWeight: 900, color: "var(--text-main)", letterSpacing: "2px" }}>{titulo}</span>
+        <div style={{ marginBottom: "3rem", background: "var(--bg-card)", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)", boxShadow: "0 8px 30px rgba(0,0,0,0.06)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.5rem", borderBottom: `2px solid ${color}`, paddingBottom: "10px" }}>
+                <div style={{ width: "16px", height: "16px", borderRadius: "4px", background: color, boxShadow: `0 0 10px ${color}` }} />
+                <span style={{ fontSize: "1.1rem", fontWeight: 900, color: "var(--text-main)", letterSpacing: "1.5px" }}>{titulo}</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "row", gap: "40px", overflowX: "auto", padding: "16px 16px 1.5rem 16px", minHeight: "300px" }}>
-                {rondas.map((ronda, idx) => (
-                    <RoundColumn key={ronda.ID} ronda={ronda} onForceResult={onForceResult} onReportar={onReportar} isAdmin={isAdmin} equipos={equipos} roundIndex={idx} torneo={torneo} usuarioData={usuarioData} />
-                ))}
+            {/* Contenedor scrolleable horizontalmente para brackets muy grandes */}
+            <div style={{ display: "flex", flexDirection: "row", overflowX: "auto", padding: "10px 10px 2rem 10px", minHeight: "350px" }}>
+                {rondas.map((ronda, idx) => {
+                    const numActual = ronda.partidas.length;
+                    const numSiguiente = idx < rondas.length - 1 ? rondas[idx + 1].partidas.length : 0;
+                    const hasNext = idx < rondas.length - 1;
+
+                    return (
+                        <RoundColumn
+                            key={ronda.ID}
+                            ronda={ronda}
+                            hasNext={hasNext}
+                            numSiguiente={numSiguiente}
+                            roundIndex={idx}
+                            onForceResult={onForceResult}
+                            onReportar={onReportar}
+                            isAdmin={isAdmin}
+                            equipos={equipos}
+                            torneo={torneo}
+                            usuarioData={usuarioData}
+                        />
+                    );
+                })}
             </div>
         </div>
     );
