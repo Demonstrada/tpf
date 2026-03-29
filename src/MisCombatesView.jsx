@@ -74,15 +74,25 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
         const key = `${enfId}-${ronda}`;
         setFormData(prev => ({ ...prev, [key]: { ...prev[key], [field]: value } }));
     };
+    const handleFileUpload = (e, enfId, ronda) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            handleFormChange(enfId, ronda, "Replay_Log", evt.target.result);
+        };
+        reader.readAsText(file);
+    };
     const enviarReporte = async (enf, ronda) => {
         const key = `${enf.ID}-${ronda}`;
         const data = formData[key] || { Sube_Replay: true };
-        if (data.Sube_Replay !== false && (!data.Replay_Log || !data.Equipo)) {
-            alert("Debes proporcionar el Log y el Equipo o desactivar la opción de Replay.");
+        if (data.Sube_Replay !== false && !data.Replay_Log) {
+            alert("Debes proporcionar al menos el Log del combate o desactivar la opción de Replay.");
             return;
         }
         if (!data.ID_Ganador_Extraido) { alert("Indica quién ganó el combate."); return; }
+
         try {
             const res = await fetch(`${baseURL}/reportar-combate`, {
                 method: "POST",
@@ -157,8 +167,8 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
             if (parts.length < 2) return;
             const accion = parts[1];
 
-            if (accion === "win")    ganador = parts[2];
-            if (accion === "turn")   turnos  = parseInt(parts[2]);
+            if (accion === "win") ganador = parts[2];
+            if (accion === "turn") turnos = parseInt(parts[2]);
             if (accion === "player") {
                 if (parts[2] === "p1" && parts[3]) p1Name = parts[3];
                 if (parts[2] === "p2" && parts[3]) p2Name = parts[3];
@@ -169,9 +179,9 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
                 if (parts[2] === "p2") p2Team.push({ especie, nickname: especie, dead: false, intel: null });
             }
             if (accion === "switch" || accion === "drag") {
-                const identificador  = parts[2];
-                const slot           = identificador.substring(0, 2);
-                const nickname       = identificador.substring(5).trim();
+                const identificador = parts[2];
+                const slot = identificador.substring(0, 2);
+                const nickname = identificador.substring(5).trim();
                 const especieSaliente = parts[3].split(",")[0];
 
                 if (slot === "p1") p1Active[identificador] = especieSaliente;
@@ -206,7 +216,7 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
     // ── LÓGICA DE FILTRADO Y PESTAÑAS ──────────────────────────────────
     const filtrados = enfrentamientos.filter(enf => {
         const isTorneo = String(enf.ID).startsWith('T_');
-        
+
         // Filtrar por pestaña activa
         if (tabActivo === "eventos" && isTorneo) return false;
         if (tabActivo === "torneos" && !isTorneo) return false;
@@ -265,7 +275,7 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
 
                     {/* SISTEMA DE PESTAÑAS (TABS) */}
                     <div style={{ display: "flex", gap: "15px", marginBottom: "1.5rem", borderBottom: "2px solid #30363d" }}>
-                        <button 
+                        <button
                             onClick={() => setTabActivo("eventos")}
                             style={{
                                 background: "transparent", border: "none", cursor: "pointer",
@@ -276,7 +286,7 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
                             }}>
                             EVENTOS
                         </button>
-                        <button 
+                        <button
                             onClick={() => setTabActivo("torneos")}
                             style={{
                                 background: "transparent", border: "none", cursor: "pointer",
@@ -323,7 +333,7 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
                             const rival = Number(enf.ID_Jugador1) === Number(usuarioData.id) ? enf.Jugador2_Nombre : enf.Jugador1_Nombre;
                             const misReportes = reportes.filter(r => r.ID_Enfrentamiento === enf.ID);
                             const rondaSiguiente = misReportes.length + 1;
-                            
+
                             let wins = misReportes.filter(r => Number(r.ID_Ganador_Extraido) === Number(usuarioData.id)).length;
                             let losses = misReportes.filter(r => Number(r.ID_Ganador_Extraido) !== Number(usuarioData.id) && Number(r.ID_Ganador_Extraido) !== 0).length;
 
@@ -379,7 +389,7 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
                                                 const rNum = i + 1;
                                                 const rep = misReportes.find(x => x.Ronda === rNum);
                                                 const result = getRoundResult(rep);
-                                                
+
                                                 const isNext = rNum === rondaSiguiente && !rep && !combateTerminado;
                                                 const isLocked = (!rep && rNum !== rondaSiguiente) || (!rep && combateTerminado);
 
@@ -543,25 +553,48 @@ export default function MisCombatesView({ baseURL, usuarioData, onRequestFullscr
                                         <div style={{ position: "absolute", top: "3px", left: subeReplay ? "18px" : "3px", width: "14px", height: "14px", borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
                                     </div>
                                     <div>
-                                        <span style={{ color: "#c9d1d9", fontWeight: 700, fontSize: "0.82rem" }}>Aportar Log de Inteligencia</span>
+                                        <span style={{ color: "#c9d1d9", fontWeight: 700, fontSize: "0.82rem" }}>Aportar Log</span>
                                         <span style={{ display: "block", color: "#8b949e", fontSize: "0.7rem" }}>Incluir replay para análisis</span>
                                     </div>
                                 </label>
 
                                 {subeReplay && (
                                     <div className="animation-fade" style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "1.2rem" }}>
-                                        {[
-                                            { field: "Replay_Log", placeholder: "Pega el Replay Log aquí...", rows: 4 },
-                                            { field: "Equipo", placeholder: "Pega tu Equipo (Showdown Paste)...", rows: 4 }
-                                        ].map(ta => (
-                                            <textarea key={ta.field} rows={ta.rows} placeholder={ta.placeholder}
-                                                value={fd[ta.field] || ""}
-                                                onChange={e => handleFormChange(enf.ID, rNum, ta.field, e.target.value)}
-                                                style={{ width: "100%", boxSizing: "border-box", padding: "10px 12px", background: "#0d1117", border: "1px solid #30363d", borderRadius: "8px", color: "#10b981", fontFamily: "monospace", fontSize: "0.78rem", resize: "vertical", outline: "none", transition: "border-color 0.2s" }}
-                                                onFocus={e => e.target.style.borderColor = "#00d2d3"}
-                                                onBlur={e => e.target.style.borderColor = "#30363d"}
+
+                                        {/* ZONA DEL REPLAY LOG CON SUBIDA DE ARCHIVO */}
+                                        <div style={{ background: "#0d1117", border: "1px solid #30363d", borderRadius: "8px", padding: "10px" }}>
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                                                <span style={{ fontSize: "0.75rem", color: "#8b949e", fontWeight: 700 }}>REPLAY LOG</span>
+                                                <input
+                                                    type="file"
+                                                    accept=".html,.txt"
+                                                    onChange={(e) => handleFileUpload(e, enf.ID, rNum)}
+                                                    style={{ fontSize: "0.7rem", color: "#c9d1d9", maxWidth: "180px" }}
+                                                />
+                                            </div>
+                                            <textarea
+                                                rows={4}
+                                                placeholder="Pega el código fuente del replay o sube el archivo .html..."
+                                                value={fd.Replay_Log || ""}
+                                                onChange={e => handleFormChange(enf.ID, rNum, "Replay_Log", e.target.value)}
+                                                style={{ width: "100%", boxSizing: "border-box", background: "transparent", border: "none", color: "#10b981", fontFamily: "monospace", fontSize: "0.78rem", resize: "vertical", outline: "none" }}
                                             />
-                                        ))}
+                                        </div>
+
+                                        {/* ZONA DEL EQUIPO (OPCIONAL) */}
+                                        <div style={{ background: "#0d1117", border: "1px solid #30363d", borderRadius: "8px", padding: "10px" }}>
+                                            <div style={{ marginBottom: "8px" }}>
+                                                <span style={{ fontSize: "0.75rem", color: "#8b949e", fontWeight: 700 }}>EQUIPO (Opcional)</span>
+                                            </div>
+                                            <textarea
+                                                rows={3}
+                                                placeholder="Pega tu equipo en formato Showdown Paste..."
+                                                value={fd.Equipo || ""}
+                                                onChange={e => handleFormChange(enf.ID, rNum, "Equipo", e.target.value)}
+                                                style={{ width: "100%", boxSizing: "border-box", background: "transparent", border: "none", color: "#00d2d3", fontFamily: "monospace", fontSize: "0.78rem", resize: "vertical", outline: "none" }}
+                                            />
+                                        </div>
+
                                     </div>
                                 )}
 
