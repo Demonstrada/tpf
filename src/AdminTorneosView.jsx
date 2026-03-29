@@ -515,17 +515,15 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
                 </Modal>
             )}
 
-            {/* ── MODAL AÑADIR/EDITAR EQUIPO (LÓGICA ADMIN VS JUGADOR) ───────── */}
             {modalEquipo && (
                 <Modal
-                    title={miEquipoActual ? "Gestionar mi equipo" : "Inscripción"}
+                    title={isAdmin ? "Añadir Equipo (Admin)" : (miEquipoActual ? "Gestionar mi equipo" : "Inscripción")}
                     subtitle={modalEquipo.Nombre}
                     onClose={() => setModalEquipo(null)}
-                    onSubmit={miEquipoActual ? handleEditarMiEquipo : handleAñadirEquipo}
-                    submitLabel={miEquipoActual ? "Guardar cambios" : "Inscribirse"}
+                    onSubmit={isAdmin ? handleAñadirEquipo : (miEquipoActual ? handleEditarMiEquipo : handleAñadirEquipo)}
+                    submitLabel={isAdmin ? "Inscribir usuarios" : (miEquipoActual ? "Guardar cambios" : "Inscribirse")}
                 >
                     {isAdmin ? (
-                        // VISTA DE ADMINISTRADOR: Puede añadir a cualquier jugador a un equipo con tu lógica
                         <>
                             <Field label="Nombre del equipo">
                                 <input type="text" value={formEquipo.Nombre} onChange={e => setFormEquipo({ ...formEquipo, Nombre: e.target.value })} placeholder={modalEquipo.Modo === '2v2' ? "Ej: Team Rocket" : "Nombre del jugador/equipo"} style={inputStyle}
