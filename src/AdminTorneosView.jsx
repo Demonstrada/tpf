@@ -101,13 +101,21 @@ export default function AdminTorneosView({ baseURL, usuarioData }) {
 
     // ── CREAR / EDITAR TORNEO ─────────────────────────────────────────────────
     const abrirModalCrear = () => {
-        setFormTorneo({ ID: null, Nombre: "", Modo: "1v1", ID_Juego: "", Participantes: 8, Rondas_Partida: 3, Final_Rondas_Distintas: false, Final_Rondas: 5, Aleatorio: false, Puntos_Por_Victoria: 0, Puntos_Ganador_Torneo: 0 });
+        setFormTorneo({
+            ID: null, Nombre: "", Modo: "1v1",
+            Tipo_Bracket: "double",
+            ID_Juego: "", Participantes: 8, Rondas_Partida: 3,
+            Final_Rondas_Distintas: false, Final_Rondas: 5,
+            Aleatorio: false, Puntos_Por_Victoria: 0, Puntos_Ganador_Torneo: 0
+        });
         setModalCrear(true);
     };
 
     const abrirModalEditar = (t) => {
         setFormTorneo({
-            ID: t.ID, Nombre: t.Nombre, Modo: t.Modo, ID_Juego: t.ID_Juego || "",
+            ID: t.ID, Nombre: t.Nombre, Modo: t.Modo,
+            Tipo_Bracket: t.Tipo_Bracket || "double",
+            ID_Juego: t.ID_Juego || "",
             Participantes: t.Participantes, Rondas_Partida: t.Rondas_Partida || 3,
             Final_Rondas_Distintas: t.Final_Rondas_Distintas === 1, Final_Rondas: t.Final_Rondas || 5,
             Aleatorio: t.Aleatorio === 1, Puntos_Por_Victoria: t.Puntos_Por_Victoria || 0, Puntos_Ganador_Torneo: t.Puntos_Ganador_Torneo || 0
