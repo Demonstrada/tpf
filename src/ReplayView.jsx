@@ -359,7 +359,17 @@ export default function ReplayView({ baseURL = "http://localhost:5000", onReques
         setIframeContent(htmlVisor);
         setStep("spoilers");
     };
+    const handleDrop = (e) => { e.preventDefault(); const file = e.dataTransfer.files[0]; if (file) leerArchivo(file); };
+    const handleFileSelect = (e) => { const file = e.target.files[0]; if (file) leerArchivo(file); };
 
+    const leerArchivo = (file) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            setLogText(event.target.result);
+            analizarLog(event.target.result);
+        };
+        reader.readAsText(file);
+    };
     const seleccionarPov = (jugadorId) => {
         const equipo1 = modalPov.Equipos[modalPov.Jugador1_ID] || "";
         const equipo2 = modalPov.Equipos[modalPov.Jugador2_ID] || "";
