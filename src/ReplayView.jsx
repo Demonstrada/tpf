@@ -18,9 +18,9 @@ strong { color: #8b949e !important; }
 
 // ─── ESTADO CONFIG ────────────────────────────────────────────────────────────
 const ESTADOS = {
-    0: { texto: "PENDIENTE",  color: "#8b949e",  bg: "rgba(139,148,158,0.08)", border: "#30363d"  },
-    1: { texto: "VALIDADO",   color: "#10b981",  bg: "rgba(16,185,129,0.08)",  border: "#10b981"  },
-    2: { texto: "EN DISPUTA", color: "#ff4757",  bg: "rgba(255,71,87,0.08)",   border: "#ff4757"  },
+    0: { texto: "PENDIENTE", color: "#8b949e", bg: "rgba(139,148,158,0.08)", border: "#30363d" },
+    1: { texto: "VALIDADO", color: "#10b981", bg: "rgba(16,185,129,0.08)", border: "#10b981" },
+    2: { texto: "EN DISPUTA", color: "#ff4757", bg: "rgba(255,71,87,0.08)", border: "#ff4757" },
 };
 
 // ─── STAT BAR ─────────────────────────────────────────────────────────────────
@@ -86,8 +86,8 @@ const AdminValidationPanel = ({ combate, baseURL, onEstadoChange }) => {
             </div>
             <div style={{ display: "flex", gap: "6px" }}>
                 {[
-                    { estado: 1, label: "VALIDAR",  color: "#10b981" },
-                    { estado: 2, label: "DISPUTA",  color: "#ff4757" },
+                    { estado: 1, label: "VALIDAR", color: "#10b981" },
+                    { estado: 2, label: "DISPUTA", color: "#ff4757" },
                     { estado: 0, label: "PENDIENTE", color: "#8b949e" },
                 ].map(opt => (
                     <button
@@ -256,9 +256,11 @@ export default function ReplayView({ baseURL = "http://localhost:5000", onReques
         return pokes;
     };
 
-    // ── ANALIZADOR DE LOG ─────────────────────────────────────────────────────
-    const analizarLog = (textoBruto, equipoTexto = "") => {
-        const equipoDetallado = parsearEquipoCompleto(equipoTexto);
+    // ── ANALIZADOR DE LOG MEJORADO ────────────────────────────────────────────
+    const analizarLog = (textoBruto, pasteJ1 = "", pasteJ2 = "", nombreJ1 = "", nombreJ2 = "") => {
+        const eqJ1 = parsearEquipoCompleto(pasteJ1);
+        const eqJ2 = parsearEquipoCompleto(pasteJ2);
+
         const textoSaneado = textoBruto.replace(/\\n/g, "\n");
         const matchHtml = textoSaneado.match(/<script[^>]*class="battle-log-data"[^>]*>([\s\S]*?)<\/script>/i);
         const textoCombate = matchHtml ? matchHtml[1] : textoSaneado;
@@ -281,8 +283,8 @@ export default function ReplayView({ baseURL = "http://localhost:5000", onReques
             const parts = linea.split("|");
             if (parts.length < 2) return;
             const accion = parts[1];
-            if (accion === "win")    ganador = parts[2];
-            if (accion === "turn")   turnos  = parseInt(parts[2]);
+            if (accion === "win") ganador = parts[2];
+            if (accion === "turn") turnos = parseInt(parts[2]);
             if (accion === "player") {
                 if (parts[2] === "p1" && parts[3]) p1Name = parts[3];
                 if (parts[2] === "p2" && parts[3]) p2Name = parts[3];
@@ -302,46 +304,68 @@ export default function ReplayView({ baseURL = "http://localhost:5000", onReques
                 const pokeObj = team.find(p => p.especie === especieSaliente);
                 if (pokeObj) pokeObj.nickname = nickname;
             }
-            if (accion === "move")     updatePokeData(parts[2], p => p.intel.moves.add(parts[3]));
-            if (accion === "-item")    updatePokeData(parts[2], p => { p.intel.item = parts[3]; });
+            if (accion === "move") updatePokeData(parts[2], p => p.intel.moves.add(parts[3]));
+            if (accion === "-item") updatePokeData(parts[2], p => { p.intel.item = parts[3]; });
             if (accion === "-ability") updatePokeData(parts[2], p => { p.intel.ability = parts[3]; });
-            if (accion === "faint")    updatePokeData(parts[2], p => { p.dead = true; });
+            if (accion === "faint") updatePokeData(parts[2], p => { p.dead = true; });
         });
 
-        p1Team.forEach(p => { p.intel.moves = Array.from(p.intel.moves); });
-        p2Team.forEach(p => { p.intel.moves = Array.from(p.intel.moves); });
+        const n1 = (nombreJ1 || "").toLowerCase().trim();
+        const n2 = (nombreJ2 || "").toLowerCase().trim();
+        const rp1 = (p1Name || "").toLowerCase().trim();
+        const rp2 = (p2Name || "").toLowerCase().trim();
 
-        [...p1Team, ...p2Team].forEach(pokeLog => {
-            const matchIntel = equipoDetallado.find(p =>
-                p.species.toLowerCase() === pokeLog.especie.toLowerCase() &&
-                p.nickname.toLowerCase() === pokeLog.nickname.toLowerCase()
-            );
-            if (matchIntel) pokeLog.intel = matchIntel;
-        });
+        let p1Paste = [...eqJ1];
+        let p2Paste = [...eqJ2];
+
+        if ((n2 && rp1.includes(n2)) || (n1 && rp2.includes(n1))) {
+            p1Paste = [...eqJ2];
+            p2Paste = [...eqJ1];
+        }
+
+        const mapIntel = (team, pasteArray) => {
+            team.forEach(pokeLog => {
+                let matchIdx = pasteArray.findIndex(p =>
+                    p.species.toLowerCase() === pokeLog.especie.toLowerCase() &&
+                    p.nickname.toLowerCase() === pokeLog.nickname.toLowerCase()
+                );
+                if (matchIdx === -1) {
+                    matchIdx = pasteArray.findIndex(p => p.species.toLowerCase() === pokeLog.especie.toLowerCase());
+                }
+
+                if (matchIdx > -1) {
+                    const match = pasteArray[matchIdx];
+                    pokeLog.intel = {
+                        ...match,
+                        moves: match.moves.length > 0 ? match.moves : Array.from(pokeLog.intel.moves),
+                        item: match.item || pokeLog.intel.item,
+                        ability: match.ability || pokeLog.intel.ability
+                    };
+                    pasteArray.splice(matchIdx, 1);
+                } else {
+                    pokeLog.intel.moves = Array.from(pokeLog.intel.moves);
+                }
+            });
+        };
+
+        mapIntel(p1Team, p1Paste);
+        mapIntel(p2Team, p2Paste);
 
         setStats({ ganador, turnos, p1Name, p2Name, p1Team, p2Team, muertos: [...p1Team, ...p2Team].filter(p => p.dead).length });
 
         const logEscapado = textoCombate.replace(/<\/script>/gi, "<\\/script>");
         const htmlVisor = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${iframeStyles}</style></head><body><div class="wrapper replay-wrapper"><div class="battle"></div><div class="battle-log"></div><div class="replay-controls"></div><div class="replay-controls-2"></div></div><script type="text/plain" class="battle-log-data">${logEscapado}</script><script src="https://play.pokemonshowdown.com/js/replay-embed.js"></script><script>var progressChecker=setInterval(function(){if(window.battle&&window.battle.ended){window.parent.postMessage('REPLAY_ENDED','*');clearInterval(progressChecker);}},1000);</script></body></html>`;
+
         setIframeContent(htmlVisor);
         setStep("spoilers");
-    };
-
-    const handleDrop = (e) => { e.preventDefault(); const file = e.dataTransfer.files[0]; if (file) leerArchivo(file); };
-    const handleFileSelect = (e) => { const file = e.target.files[0]; if (file) leerArchivo(file); };
-    const leerArchivo = (file) => {
-        const reader = new FileReader();
-        reader.onload = (event) => { setLogText(event.target.result); analizarLog(event.target.result); };
-        reader.readAsText(file);
     };
 
     const seleccionarPov = (jugadorId) => {
         const equipo1 = modalPov.Equipos[modalPov.Jugador1_ID] || "";
         const equipo2 = modalPov.Equipos[modalPov.Jugador2_ID] || "";
         setModalPov(null);
-        analizarLog(modalPov.Logs[jugadorId], equipo1 + "\n\n" + equipo2);
+        analizarLog(modalPov.Logs[jugadorId], equipo1, equipo2, modalPov.Jugador1_Nombre, modalPov.Jugador2_Nombre);
     };
-
     // ── RENDER EQUIPO ─────────────────────────────────────────────────────────
     const renderTeam = (teamName, teamArray) => (
         <div className="combat-team-box">
@@ -442,7 +466,7 @@ export default function ReplayView({ baseURL = "http://localhost:5000", onReques
                         borderRadius: "10px", border: "1px solid #30363d"
                     }}>
                         {[
-                            { key: "evento",  placeholder: "Filtrar por Evento..."  },
+                            { key: "evento", placeholder: "Filtrar por Evento..." },
                             { key: "jugador", placeholder: "Filtrar por Jugador..." },
                         ].map(f => (
                             <input
