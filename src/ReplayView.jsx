@@ -219,21 +219,40 @@ export default function ReplayView({ baseURL = "http://localhost:5000", onReques
 
     const toId = (str) => str?.toLowerCase().replace(/[^a-z0-9]/g, "") ?? "";
 
-    // ── PARSER DE EQUIPO ──────────────────────────────────────────────────────
+    // ── PARSER DE EQUIPO (MÁS ROBUSTO) ────────────────────────────────────────
     const parsearEquipoCompleto = (texto) => {
         if (!texto) return [];
         const pokes = [];
         let currentPoke = null;
-        for (let linea of texto.split('\n')) {
-            linea = linea.trim();
-            if (linea === '') { if (currentPoke) { pokes.push(currentPoke); currentPoke = null; } continue; }
+        const lineas = texto.replace(/\r\n/g, '\n').split('\n');
+
+        for (let i = 0; i < lineas.length; i++) {
+            let linea = lineas[i].trim();
+
+            if (linea === '') {
+                if (currentPoke) { pokes.push(currentPoke); currentPoke = null; }
+                continue;
+            }
+
             if (!currentPoke) {
                 currentPoke = { nickname: '', species: '', item: '', ability: '', evs: {}, ivs: {}, nature: '', moves: [] };
-                let namePart = linea.split('@')[0].replace(/\(M\)/g, '').replace(/\(F\)/g, '').trim();
+
+                let namePart = linea.split('@')[0]
+                    .replace(/\(M\)/gi, '')
+                    .replace(/\(F\)/gi, '')
+                    .replace(/\(Shiny\)/gi, '')
+                    .trim();
+
                 if (linea.includes('@')) currentPoke.item = linea.split('@')[1].trim();
-                const match = namePart.match(/(.*)\s+\((.*)\)/);
-                if (match) { currentPoke.nickname = match[1].trim(); currentPoke.species = match[2].trim(); }
-                else { currentPoke.species = namePart; currentPoke.nickname = namePart; }
+
+                const match = namePart.match(/^(.*?)\s*\(([^)]+)\)$/);
+                if (match) {
+                    currentPoke.nickname = match[1].trim();
+                    currentPoke.species = match[2].trim();
+                } else {
+                    currentPoke.species = namePart;
+                    currentPoke.nickname = namePart;
+                }
             } else {
                 if (linea.startsWith('Ability:')) currentPoke.ability = linea.substring(8).trim();
                 else if (linea.startsWith('EVs:')) {
@@ -275,7 +294,7 @@ export default function ReplayView({ baseURL = "http://localhost:5000", onReques
             const especieActiva = slot === "p1" ? p1Active[playerSlot] : p2Active[playerSlot];
             if (!especieActiva) return;
             const team = slot === "p1" ? p1Team : p2Team;
-            const poke = team.find(p => p.especie.startsWith(especieActiva) || especieActiva.startsWith(p.especie));
+            const poke = team.find(p => p.especie === especieActiva || p.especie.startsWith(especieActiva));
             if (poke) callback(poke);
         };
 
@@ -283,6 +302,7 @@ export default function ReplayView({ baseURL = "http://localhost:5000", onReques
             const parts = linea.split("|");
             if (parts.length < 2) return;
             const accion = parts[1];
+
             if (accion === "win") ganador = parts[2];
             if (accion === "turn") turnos = parseInt(parts[2]);
             if (accion === "player") {
@@ -318,33 +338,47 @@ export default function ReplayView({ baseURL = "http://localhost:5000", onReques
         let p1Paste = [...eqJ1];
         let p2Paste = [...eqJ2];
 
-        if ((n2 && rp1.includes(n2)) || (n1 && rp2.includes(n1))) {
+        if (n2 && n1 && ((rp1.includes(n2) || n2.includes(rp1)) && !rp1.includes(n1))) {
             p1Paste = [...eqJ2];
             p2Paste = [...eqJ1];
         }
 
         const mapIntel = (team, pasteArray) => {
             team.forEach(pokeLog => {
-                let matchIdx = pasteArray.findIndex(p =>
-                    p.species.toLowerCase() === pokeLog.especie.toLowerCase() &&
-                    p.nickname.toLowerCase() === pokeLog.nickname.toLowerCase()
-                );
-                if (matchIdx === -1) {
-                    matchIdx = pasteArray.findIndex(p => p.species.toLowerCase() === pokeLog.especie.toLowerCase());
-                }
-
+                let matchIdx = pasteArray.findIndex(p => p.species.toLowerCase() === pokeLog.especie.toLowerCase() && p.nickname.toLowerCase() === pokeLog.nickname.toLowerCase());
                 if (matchIdx > -1) {
-                    const match = pasteArray[matchIdx];
-                    pokeLog.intel = {
-                        ...match,
-                        moves: match.moves.length > 0 ? match.moves : Array.from(pokeLog.intel.moves),
-                        item: match.item || pokeLog.intel.item,
-                        ability: match.ability || pokeLog.intel.ability
-                    };
+                    pokeLog.intel = { ...pasteArray[matchIdx], moves: pasteArray[matchIdx].moves.length > 0 ? pasteArray[matchIdx].moves : Array.from(pokeLog.intel.moves) };
+                    pokeLog.matched = true;
                     pasteArray.splice(matchIdx, 1);
-                } else {
-                    pokeLog.intel.moves = Array.from(pokeLog.intel.moves);
                 }
+            });
+
+            team.forEach(pokeLog => {
+                if (pokeLog.matched) return;
+                let matchIdx = pasteArray.findIndex(p => p.species.toLowerCase() === pokeLog.especie.toLowerCase());
+                if (matchIdx > -1) {
+                    pokeLog.intel = { ...pasteArray[matchIdx], moves: pasteArray[matchIdx].moves.length > 0 ? pasteArray[matchIdx].moves : Array.from(pokeLog.intel.moves) };
+                    pokeLog.matched = true;
+                    pasteArray.splice(matchIdx, 1);
+                }
+            });
+
+            team.forEach(pokeLog => {
+                if (pokeLog.matched) return;
+                let matchIdx = pasteArray.findIndex(p => p.species.toLowerCase().includes(pokeLog.especie.toLowerCase().replace('-*', '')) || pokeLog.especie.toLowerCase().includes(p.species.toLowerCase()));
+                if (matchIdx > -1) {
+                    pokeLog.intel = { ...pasteArray[matchIdx], moves: pasteArray[matchIdx].moves.length > 0 ? pasteArray[matchIdx].moves : Array.from(pokeLog.intel.moves) };
+                    pokeLog.matched = true;
+                    pasteArray.splice(matchIdx, 1);
+                }
+            });
+            team.forEach(pokeLog => {
+                if (!pokeLog.matched && pasteArray.length > 0) {
+                    pokeLog.intel = { ...pasteArray[0], moves: pasteArray[0].moves.length > 0 ? pasteArray[0].moves : Array.from(pokeLog.intel.moves) };
+                    pokeLog.matched = true;
+                    pasteArray.splice(0, 1);
+                }
+                if (!pokeLog.matched) pokeLog.intel.moves = Array.from(pokeLog.intel.moves);
             });
         };
 
